@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // TODO: Make this contextual
   const searchContext = {
     currency: "USD",
-    channel: "channel-us",
+    channel: "proyecto705",
     languageCode: "EN_US",
   } satisfies SearchContext;
 

@@ -81,6 +81,9 @@ const nextConfig = withAnalyzer(
         {
           hostname: "cdn.buttercms.com",
         },
+        {
+          hostname: "*proyecto705.com.mx",
+        },
       ],
       deviceSizes: [360, 480, 640, 768, 1024],
       imageSizes: [256, 512, 768, 1024],

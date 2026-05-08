@@ -5,6 +5,7 @@ import { clientEnvs } from "@/envs/client";
 export const CHANNEL = clientEnvs.NEXT_PUBLIC_DEFAULT_CHANNEL;
 
 export const LOCALE_CHANNEL_MAP = {
+  "es-MX": "mx",
   "en-GB": "gb",
   "en-US": "us",
 } as const;
@@ -12,6 +13,7 @@ export const LOCALE_CHANNEL_MAP = {
 export const SUPPORTED_CURRENCIES = ["USD", "GBP"] as const;
 
 export const SUPPORTED_CHANNELS = [
+  "proyecto705",
   "default-channel",
   "channel-us",
   "channel-uk",
@@ -24,6 +26,12 @@ export const SUPPORTED_CONTINENTS = [
 ] as const;
 
 export const LANGUAGES = {
+  MX: {
+    id: "mx",
+    name: "Español (México)",
+    code: "ES_MX",
+    locale: "es-MX",
+  },
   GB: {
     id: "gb",
     name: "English (United Kingdom)",
@@ -39,6 +47,16 @@ export const LANGUAGES = {
 } as const;
 
 export const MARKETS = {
+  MX: {
+    id: "mx",
+    name: "México",
+    channel: "proyecto705",
+    currency: "MXN",
+    continent: "North America",
+    countryCode: "MX",
+    defaultLanguage: LANGUAGES.MX,
+    supportedLanguages: [LANGUAGES.MX],
+  },
   GB: {
     id: "gb",
     name: "United Kingdom",
