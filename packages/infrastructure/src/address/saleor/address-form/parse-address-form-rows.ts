@@ -14,6 +14,7 @@ const COUNTRY_CODES_WITH_COUNTRY_AREA_VALIDATION = [
   "ES",
   "JP",
   "US",
+  "MX",
 ];
 
 export const parseAddressFormRows = ({

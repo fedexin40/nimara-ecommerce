@@ -14,7 +14,7 @@ import { TransactionInitializeMutationDocument } from "../graphql/mutations/gene
 
 type PaymentInitializeData = {
   paymentIntent: {
-    clientSecret: string;
+    client_secret: string;
     publishableKey: string;
   };
 };
@@ -97,6 +97,6 @@ export const transactionInitializeInfra =
       transactionId: result.data.transactionInitialize.transaction.id,
       clientSecret: (
         result.data.transactionInitialize.data as PaymentInitializeData
-      ).paymentIntent.clientSecret,
+      ).paymentIntent.client_secret,
     });
   };

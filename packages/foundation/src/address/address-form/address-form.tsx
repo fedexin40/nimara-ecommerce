@@ -31,12 +31,12 @@ const nameFormRow = [
   {
     name: "firstName",
     type: "text" as FieldType,
-    isRequired: false,
+    isRequired: true,
   },
   {
     name: "lastName",
     type: "text" as FieldType,
-    isRequired: false,
+    isRequired: true,
   },
 ];
 
@@ -46,14 +46,6 @@ const phoneCodeRow = [
     type: "text" as FieldType,
     isRequired: false,
     inputMode: "tel",
-  },
-];
-
-const companyNameRow = [
-  {
-    name: "companyName",
-    type: "text" as FieldType,
-    isRequired: false,
   },
 ];
 
@@ -128,7 +120,18 @@ export const AddressForm = ({
 
   addressFormRows.forEach((row) => {
     if (!["postalCode", "city"].includes(row[0].name)) {
-      return formattedAddressFormRows.push(row);
+      const modifiedRow = row.map((field) => {
+        if (field.name === "streetAddress2") {
+          return {
+            ...field,
+            isRequired: true,
+          };
+        }
+
+        return field;
+      });
+
+      return formattedAddressFormRows.push(modifiedRow);
     }
 
     const isPostalRowHandled = formattedAddressFormRows.some((r) =>
@@ -152,27 +155,23 @@ export const AddressForm = ({
     }
   });
 
+  const finalAddressFormRows = isChangingCountry
+    ? [nameFormRow, phoneCodeRow, countrySelectorFormRow]
+    : [
+        nameFormRow,
+        phoneCodeRow,
+        ...formattedAddressFormRows,
+        countrySelectorFormRow,
+      ];
+
   return (
     <>
       <AddressFormGenerator
         isDisabled={isChangingCountry || isDisabled}
         schemaPrefix={schemaPrefix}
-        addressFormRows={[
-          nameFormRow,
-          companyNameRow,
-          countrySelectorFormRow,
-          phoneCodeRow,
-        ]}
+        addressFormRows={finalAddressFormRows}
       />
-      {isChangingCountry ? (
-        <p>{t("shipping-address.loading-fields")}</p>
-      ) : (
-        <AddressFormGenerator
-          isDisabled={isChangingCountry || isDisabled}
-          schemaPrefix={schemaPrefix}
-          addressFormRows={formattedAddressFormRows}
-        />
-      )}
+      {isChangingCountry && <p>{t("shipping-address.loading-fields")}</p>}
     </>
   );
 };

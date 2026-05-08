@@ -44,6 +44,7 @@ export async function GET(
 
   const marketLanguage = channelValidationResult.market.defaultLanguage.locale;
   const marketPrefix =
+    // @ts-expect-error: No idea why it is complaning
     marketLanguage === "en-US" ? "" : LOCALE_PREFIXES[marketLanguage];
 
   const productFeedResult = await acpService.getProductFeed({

@@ -46,7 +46,7 @@ export const StandardPDPView = async ({
             searchPath={paths.search}
           />
 
-          <div className="grid gap-8 md:grid-cols-2 md:gap-28">
+          <div className="grid gap-2 md:grid-cols-2 md:gap-28">
             <div className="md:col-span-1">
               <ProductMediaWrapper
                 region={region}
@@ -54,7 +54,7 @@ export const StandardPDPView = async ({
                 availability={availability}
                 services={services}
                 checkoutId={checkoutId}
-                showAs="vertical"
+                showAs="carousel"
               />
             </div>
 
