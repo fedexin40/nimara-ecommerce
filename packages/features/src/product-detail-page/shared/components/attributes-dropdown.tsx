@@ -48,7 +48,11 @@ export const AttributesDropdown = ({ product }: { product: Product }) => {
   }
 
   return (
-    <Accordion className="mt-4" type="single" collapsible>
+    <Accordion
+      className="mt-4"
+      type="single"
+      collapsible
+    >
       {attributesToDisplay.map((attribute) => {
         if (
           !attribute.values.some(

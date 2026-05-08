@@ -7,6 +7,9 @@ import enStorefront from "./messages/en/storefront.json";
 import enGbSharedCommon from "./messages/en-GB/common.json";
 import enGbMarketplace from "./messages/en-GB/marketplace.json";
 import enGbStorefront from "./messages/en-GB/storefront.json";
+import esMxSharedCommon from "./messages/es-MX/common.json";
+import esMxMarketplace from "./messages/es-MX/marketplace.json";
+import esMxStorefront from "./messages/es-MX/storefront.json";
 import { deepMerge } from "./utils";
 
 type AppId = "storefront" | "marketplace";
@@ -14,6 +17,7 @@ type AppId = "storefront" | "marketplace";
 type AnyMessages = Record<string, unknown>;
 
 const BASE_SHARED = enSharedCommon as Messages;
+
 const BASE_APP: Record<AppId, Messages> = {
   storefront: enStorefront as Messages,
   marketplace: enMarketplace as Messages,
@@ -21,6 +25,7 @@ const BASE_APP: Record<AppId, Messages> = {
 
 const LOCALE_SHARED: Partial<Record<SupportedLocale, AnyMessages>> = {
   "en-GB": enGbSharedCommon as AnyMessages,
+  "es-MX": esMxSharedCommon as AnyMessages,
 };
 
 const LOCALE_APP: Partial<
@@ -29,6 +34,10 @@ const LOCALE_APP: Partial<
   "en-GB": {
     storefront: enGbStorefront as AnyMessages,
     marketplace: enGbMarketplace as AnyMessages,
+  },
+  "es-MX": {
+    storefront: esMxStorefront as AnyMessages,
+    marketplace: esMxMarketplace as AnyMessages,
   },
 };
 

@@ -21,9 +21,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // TODO: Make this contextual
   const searchContext = {
-    currency: "USD",
-    channel: "channel-us",
-    languageCode: "EN_US",
+    currency: "MXN",
+    channel: "proyecto705",
+    languageCode: "ES_MX",
   } satisfies SearchContext;
 
   const services = await getServiceRegistry();

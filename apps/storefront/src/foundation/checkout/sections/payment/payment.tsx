@@ -485,16 +485,17 @@ export const Payment = ({
         locale: region.language.locale,
         secret: paymentElementSecret,
         appearance: {
-          theme: isDark ? "night" : "flat",
+          theme: isDark ? "night" : "stripe",
           variables: {
             borderRadius: "5px",
           },
+          labels: "floating",
         },
         options: {
           layout: {
-            type: "accordion",
+            type: "tabs",
             paymentMethodLogoPosition: "start",
-            defaultCollapsed: false,
+            defaultCollapsed: true,
           },
         },
       });

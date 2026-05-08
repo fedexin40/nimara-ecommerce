@@ -29,7 +29,7 @@ export async function generateStandardHomeMetadata({
         },
       ],
       url: canonicalUrl,
-      siteName: "Nimara Store",
+      siteName: "Proyecto 705 Store",
     },
   };
 }

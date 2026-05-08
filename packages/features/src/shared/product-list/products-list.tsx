@@ -17,12 +17,7 @@ export const ProductsList = ({
   listName,
 }: Props) => {
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-      <ViewListItemTracker
-        items={products}
-        listId={listId}
-        listName={listName}
-      />
+    <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
       {products.map((product, index) => (
         <SearchProductCard
           key={`${product.id}-${index}`}
