@@ -17,7 +17,7 @@ import { ProductImagePlaceholder } from "./product-image-placeholder";
 const tracking = getTrackingService();
 
 export const ProductName = ({ children }: PropsWithChildren) => (
-  <h2 className="line-clamp-1 overflow-hidden text-left text-ellipsis">
+  <h2 className="line-clamp-2 font-medium leading-snug underline-offset-2 md:group-hover:underline">
     {children}
   </h2>
 );
@@ -83,7 +83,7 @@ export const SearchProductCard = ({
           <DiscountBadge discount={discountPercent} />
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <ProductName>{name}</ProductName>
           <Price price={price} undiscountedPrice={undiscountedPrice} />
         </div>

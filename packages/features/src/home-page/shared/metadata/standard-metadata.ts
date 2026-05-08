@@ -10,10 +10,7 @@ import { type StandardHomeViewProps } from "../types";
  */
 export async function generateStandardHomeMetadata({
   storefrontUrl,
-  siteName,
-}: Pick<StandardHomeViewProps, "storefrontUrl"> & {
-  siteName: string;
-}): Promise<Metadata> {
+}: Pick<StandardHomeViewProps, "storefrontUrl">): Promise<Metadata> {
   const t = await getTranslations("home");
 
   const url = new URL(storefrontUrl);
@@ -32,7 +29,7 @@ export async function generateStandardHomeMetadata({
         },
       ],
       url: canonicalUrl,
-      siteName,
+      siteName: "Proyecto 705 Store",
     },
   };
 }

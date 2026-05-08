@@ -21,7 +21,7 @@ export const RelatedProducts = ({
 
   return (
     <div className="relative overflow-hidden">
-      <h2 className="text-primary mb-4 text-4xl">{t("you-may-also-like")}</h2>
+      <h2 className="text-primary mt-10 mb-4 text-2xl md:text-4xl">{t("you-may-also-like")}</h2>
       <Carousel>
         <CarouselContent>
           {products.map((product) => {
@@ -34,7 +34,7 @@ export const RelatedProducts = ({
             return (
               <CarouselItem
                 key={product.id}
-                className="flex h-auto w-4/5 flex-none flex-col md:w-1/5"
+                className="flex h-auto w-2/5 flex-none flex-col md:w-1/5"
               >
                 <SearchProductCard
                   product={product}

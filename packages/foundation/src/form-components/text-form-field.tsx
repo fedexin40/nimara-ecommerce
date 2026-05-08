@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
+import { useEffect, useRef } from "react";
 
 import {
   FormControl,
@@ -18,6 +19,10 @@ export interface TextFormFieldProps extends Omit<InputProps, "onChange"> {
   onChange?: (value: string) => void;
 }
 
+type GoogleMapsListener = {
+  remove: () => void;
+};
+
 export function TextFormField({
   label,
   name = "",
@@ -27,41 +32,113 @@ export function TextFormField({
   type,
   ...props
 }: TextFormFieldProps) {
-  const { control, setValue, getValues } = useFormContext();
+  const { control, setValue } = useFormContext();
   const { error } = control.getFieldState(name);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  /*
-    Password managers assign to input.value and then dispatch their own events.
-    React's value tracker already recorded that assignment, so its onChange
-    never runs and the form keeps the previous value. A native listener sees
-    what actually landed in the DOM; trusted events stay with React.
-  */
-  const handleExternalFill = useCallback(
-    (event: Event) => {
-      const input = inputRef.current;
+  useEffect(() => {
+    if (name !== "streetAddress1") {
+      return;
+    }
 
-      if (event.isTrusted || !input || input.value === getValues(name)) {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+    if (!apiKey || !inputRef.current) {
+      return;
+    }
+
+    setOptions({
+      key: apiKey,
+      v: "weekly",
+      region: "MX",
+      language: "es",
+    });
+
+    let listener: GoogleMapsListener | undefined;
+    let autocomplete: google.maps.places.Autocomplete;
+    let isMounted = true;
+
+    const init = async () => {
+      const { Autocomplete } = await importLibrary("places");
+
+      if (!isMounted || !inputRef.current) {
         return;
       }
 
-      setValue(name, input.value, { shouldDirty: true, shouldTouch: true });
-      onChange?.(input.value);
-    },
-    [name, onChange, setValue, getValues],
-  );
+      autocomplete = new Autocomplete(inputRef.current, {
+        types: ["address"],
+        componentRestrictions: {
+          country: "mx",
+        },
+        fields: ["address_components", "formatted_address"],
+      });
 
-  useEffect(() => {
-    const input = inputRef.current;
+      listener = autocomplete.addListener("place_changed", () => {
+        const place = autocomplete?.getPlace();
 
-    input?.addEventListener("input", handleExternalFill);
-    input?.addEventListener("change", handleExternalFill);
+        if (!place?.address_components) {
+          return;
+        }
+
+        const get = (type: string, short = false) => {
+          const component = place.address_components?.find((item) =>
+            item.types.includes(type),
+          );
+
+          return short
+            ? (component?.short_name ?? "")
+            : (component?.long_name ?? "");
+        };
+
+        const streetNumber = get("street_number");
+        const route = get("route");
+        const streetAddress1 = `${route} ${streetNumber}`.trim();
+
+        const city =
+          get("locality") ||
+          get("administrative_area_level_2") ||
+          get("sublocality");
+
+        setValue("streetAddress1", streetAddress1, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+
+        setValue(
+          "streetAddress2",
+          get("sublocality_level_1") ||
+            get("neighborhood") ||
+            get("sublocality"),
+          {
+            shouldDirty: true,
+            shouldValidate: true,
+          },
+        );
+
+        setValue("city", city, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+
+        setValue("countryArea", get("administrative_area_level_1", true), {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+
+        setValue("postalCode", get("postal_code"), {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      });
+    };
+
+    void init();
 
     return () => {
-      input?.removeEventListener("input", handleExternalFill);
-      input?.removeEventListener("change", handleExternalFill);
+      isMounted = false;
+      listener?.remove();
     };
-  }, [handleExternalFill]);
+  }, [name, setValue]);
 
   return (
     <FormField
@@ -81,10 +158,7 @@ export function TextFormField({
                   aria-label={label}
                   placeholder={placeholder}
                   {...field}
-                  ref={(node) => {
-                    field.ref(node);
-                    inputRef.current = node;
-                  }}
+                  ref={inputRef}
                   value={field?.value ?? ""}
                   onChange={(e) => {
                     field.onChange(e);

@@ -8,7 +8,7 @@ import { type IntlConfig } from "next-intl";
  * @see https://en.wikipedia.org/wiki/ISO_639-1
  * @see https://en.wikipedia.org/wiki/ISO_3166-1
  */
-export const LOCALES = ["en-US", "en-GB"] as const;
+export const LOCALES = ["en-US", "en-GB", "es-MX"] as const;
 export type SupportedLocale = (typeof LOCALES)[number];
 
 /**
@@ -16,7 +16,7 @@ export type SupportedLocale = (typeof LOCALES)[number];
  * Must be one of the locales in the `SUPPORTED_LOCALES` array.
  * A locale includes both language and region information (e.g., "en-US" = English in United States).
  */
-export const DEFAULT_LOCALE = "en-US" as const satisfies SupportedLocale;
+export const DEFAULT_LOCALE = "es-MX" as const satisfies SupportedLocale;
 export type DefaultLocale = typeof DEFAULT_LOCALE;
 
 /**
@@ -24,6 +24,7 @@ export type DefaultLocale = typeof DEFAULT_LOCALE;
  * Must be in-sync with the `SUPPORTED_LOCALES` array.
  */
 export const LOCALE_LABELS = {
+  "es-MX": "Español (México)",
   "en-US": "English (United States)",
   "en-GB": "English (United Kingdom)",
 } as const satisfies Record<SupportedLocale, string>;
@@ -34,6 +35,7 @@ export type LocaleLabels = typeof LOCALE_LABELS;
  * Must be in-sync with the `SUPPORTED_LOCALES` array.
  */
 export const MESSAGES_PATH_MAP = {
+  "es-MX": "@nimara/i18n/messages/es-MX.json",
   "en-US": "@nimara/i18n/messages/en-US.json",
   "en-GB": "@nimara/i18n/messages/en-GB.json",
 } as const satisfies Record<SupportedLocale, string>;
@@ -44,6 +46,7 @@ export type MessagesPathMap = typeof MESSAGES_PATH_MAP;
  * Must be in-sync with the `SUPPORTED_LOCALES` array.
  */
 export const LOCALE_PREFIXES = {
+  "en-US": "/us",
   "en-GB": "/gb",
 } as const satisfies Record<
   Exclude<SupportedLocale, typeof DEFAULT_LOCALE>,

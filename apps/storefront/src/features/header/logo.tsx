@@ -1,8 +1,9 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { LocalizedLink } from "@nimara/i18n/routing";
 
-import BrandLogo from "@/assets/brand-logo-dark.svg";
+import logo from "@/assets/logo.png";
 import { paths } from "@/foundation/routing/paths";
 
 export const Logo = () => {
@@ -14,7 +15,13 @@ export const Logo = () => {
       title={t("go-to-homepage")}
       aria-label={t("logo")}
     >
-      <BrandLogo height={36} className="fill-primary" />
+      <Image
+        src={logo}
+        alt="Logo"
+        width={160}
+        height={40}
+        className="dark:invert"
+      />
     </LocalizedLink>
   );
 };

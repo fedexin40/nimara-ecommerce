@@ -1,9 +1,10 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 import { LocalizedLink } from "@nimara/i18n/routing";
 
-import BrandLogo from "@/assets/brand-logo-dark.svg";
+import logo from "@/assets/logo-full.png";
 import { CACHE_TTL } from "@/config";
 import { clientEnvs } from "@/envs/client";
 import { CookieSettingsTrigger } from "@/foundation/cookie-consent";
@@ -63,33 +64,24 @@ export const Footer = async () => {
             className={`grid w-full grid-cols-2 grid-rows-[max-content,max-content] place-items-start justify-start gap-6 ${showMarketplaceFooter ? "md:grid-cols-4" : "md:grid-cols-3"}`}
           >
             <div className="col-span-2 row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-              <div className="col-span-2 flex justify-center md:col-span-1 md:justify-start">
+              <div className="col-span-2 row-span-2 flex items-center justify-center md:col-span-1 md:items-start">
                 <LocalizedLink
                   href={paths.home.asPath()}
                   title={t("common.go-to-homepage")}
                 >
-                  <BrandLogo height={36} className="fill-primary" />
+                  <Image
+                    src={logo}
+                    alt="Logo"
+                    width={160}
+                    height={40}
+                    className="h-full w-full object-cover dark:invert"
+                  />
                 </LocalizedLink>
               </div>
-              <p className="col-span-2 flex justify-center md:col-span-1 md:justify-start">
-                {t.rich("footer.demo-version", {
-                  link: (chunks: ReactNode) => (
-                    <LocalizedLink
-                      href="https://github.com/mirumee/nimara-ecommerce"
-                      className="hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      prefetch={false}
-                    >
-                      {chunks}
-                    </LocalizedLink>
-                  ),
-                })}
-              </p>
             </div>
 
             <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-              <span className="flex items-center text-primary">
+              <span className="flex items-center font-medium text-primary">
                 {t("footer.our-products")}
               </span>
               <div className="flex flex-col gap-4">
@@ -136,7 +128,7 @@ export const Footer = async () => {
             ) : null}
 
             <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-              <span className="flex items-center text-primary">
+              <span className="flex items-center font-medium text-primary">
                 {t("footer.help")}
               </span>
               <div className="flex flex-col gap-4">
