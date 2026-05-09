@@ -307,9 +307,9 @@ export const Payment = ({
           },
           options: {
             layout: {
-              type: "accordion",
+              type: "tabs",
               paymentMethodLogoPosition: "start",
-              defaultCollapsed: false,
+              defaultCollapsed: true,
             },
           },
         });
