@@ -84,7 +84,7 @@
     "create-account-success": "¡Excelentes noticias, ya casi terminas!",
     "create-account-verify": "Tu cuenta necesita ser verificada primero. Revisa tu correo y haz clic en el enlace de activación para activar tu cuenta.",
     "email-placeholder": "ej. juan.perez@mail.com",
-    "first-time-on-nimara-store": "¿Primera vez en Nimara Store?",
+    "first-time-on-nimara-store": "¿Primera vez en la tienda?",
     "i-forgot-my-password": "Olvidé mi contraseña",
     "log-out": "Cerrar sesión",
     "new-password": "Nueva contraseña",
@@ -147,7 +147,7 @@
     "our-products": "Nuestros productos"
   },
   "home": {
-    "description": "Nimara es una storefront headless flexible construida sobre Saleor. Rápida de implementar, fácil de integrar y con una interfaz intuitiva para administración y personalización.",
+    "description": "Proyecto 705 ofrece broqueles de oro 10k y 14k con diseños elegantes y delicados. Compra en línea con envíos a todo México y pago seguro.",
     "hero-banner-alt": "Banner principal de Nimara",
     "home": "Inicio",
     "homepage-preview": "Vista previa de la página principal",
