@@ -60,7 +60,7 @@ export const VariantSelector = ({
 
   return (
     <>
-      <p className="py-4 text-center text-lg md:text-left">
+      <p className="py-4 text-lg font-semibold text-left">
         <Price
           price={chosenVariantAvailability?.price}
           startPrice={startPrice}
