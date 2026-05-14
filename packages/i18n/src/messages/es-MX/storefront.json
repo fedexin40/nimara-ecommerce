@@ -12,12 +12,12 @@
     "current-password": "Contraseña actual",
     "delete-account": "Eliminar cuenta",
     "delete-account-and-all-your-data-permanently": "Eliminar cuenta y todos tus datos permanentemente",
-    "delete-account-description": "Después de eliminar tu cuenta, todos tus datos y otros detalles de la cuenta dejarán de almacenarse en Nimara Store.",
-    "delete-account-modal-description": "Una vez que elimines la cuenta, todos tus datos guardados y personales dejarán de almacenarse en Nimara Store.",
+    "delete-account-description": "Después de eliminar tu cuenta, todos tus datos y otros detalles de la cuenta dejarán de almacenarse en la tienda.",
+    "delete-account-modal-description": "Una vez que elimines la cuenta, todos tus datos guardados y personales dejarán de almacenarse en la tienda.",
     "first-and-last-name": "Nombre y apellido",
     "greetings": "Hola {username}! Estamos contentos de verte acá.",
     "hello": "Hola {username}",
-    "i-want-permanently-delete-my-account-and-all-data-from-store": "Quiero eliminar permanentemente mi cuenta y todos los datos de la tienda Nimara",
+    "i-want-permanently-delete-my-account-and-all-data-from-store": "Quiero eliminar permanentemente mi cuenta y todos los datos de la tienda",
     "in-case-of-any-questions": "En caso de cualquier duda, <contactUs>{contactUs}</contactUs> o consulta nuestra <privacyPolicy>{privacyPolicy}</privacyPolicy>.",
     "name-updated": "Tu nombre ha sido actualizado",
     "new-email": "Nuevo correo electrónico",
@@ -80,7 +80,7 @@
     "confirm-password": "Confirmar contraseña",
     "continue-as-guest": "Continuar como invitado",
     "create-account": "Crear cuenta",
-    "create-account-agreement": "Al hacer clic en “Crear cuenta” aceptas los <termsOfUse>{termsOfUse}</termsOfUse> y la <privacyPolicy>{privacyPolicy}</privacyPolicy> de Nimara Store",
+    "create-account-agreement": "Al hacer clic en “Crear cuenta” aceptas los <termsOfUse>{termsOfUse}</termsOfUse> y la <privacyPolicy>{privacyPolicy}</privacyPolicy> de la tienda Proyecto 705",
     "create-account-success": "¡Excelentes noticias, ya casi terminas!",
     "create-account-verify": "Tu cuenta necesita ser verificada primero. Revisa tu correo y haz clic en el enlace de activación para activar tu cuenta.",
     "email-placeholder": "ej. juan.perez@mail.com",
@@ -148,7 +148,7 @@
   },
   "home": {
     "description": "Proyecto 705 ofrece broqueles de oro 10k y 14k con diseños elegantes y delicados. Compra en línea con envíos a todo México y pago seguro.",
-    "hero-banner-alt": "Banner principal de Nimara",
+    "hero-banner-alt": "Banner principal de Proyecto 705",
     "home": "Inicio",
     "homepage-preview": "Vista previa de la página principal",
     "title": "Página principal"
@@ -219,7 +219,7 @@
     "you-may-also-like": "También te puede gustar"
   },
   "search": {
-    "all-products": "Todos los mejores productos de Nimara",
+    "all-products": "Todos los mejores productos de Proyecto 705",
     "all-products-link": "Enlace de todos los productos",
     "description": "Encuentra productos rápidamente en Nimara, una storefront headless impulsada por Saleor con búsqueda y filtrado inteligente.",
     "go-to-product": "Ir al producto {name}",
