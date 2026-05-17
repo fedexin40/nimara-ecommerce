@@ -18,7 +18,9 @@ import { cn } from "@nimara/ui/lib/utils";
 import { useVariantSelection } from "../hooks/useVariantSelection";
 import { type AddToBagAction } from "../types";
 import { AddToBag } from "./add-to-bag";
+import { StickyBar } from "./sticky.bar";
 import { VariantDropdown } from "./variant-dropdown";
+
 
 type VariantSelectorProps = {
   addToBagAction: AddToBagAction;
@@ -202,6 +204,36 @@ export const VariantSelector = ({
         }
         addToBagAction={addToBagAction}
       />
+
+      <StickyBar
+        price={startPrice.amount + " " + startPrice.currency}
+        productName={product.name}
+      >
+        <AddToBag
+          cart={marketplaceEnabled ? cart : null}
+          cartPath={cartPath}
+          productVendorId={marketplaceEnabled ? (product.vendorId ?? null) : null}
+          variantId={
+            matchingVariants?.length > 1
+              ? discriminatedVariantId
+              : chosenVariant
+                ? chosenVariant?.id
+                : areAllRequiredSelectionAttributesChosen
+                  ? "NOTIFY_ME"
+                  : ""
+          }
+          isVariantAvailable={
+            matchingVariants?.length > 1
+              ? true
+              : chosenVariant
+                ? isChosenVariantAvailable
+                : areAllRequiredSelectionAttributesChosen
+                  ? false
+                  : true
+          }
+          addToBagAction={addToBagAction}
+        />
+      </StickyBar>
     </>
   );
 };
