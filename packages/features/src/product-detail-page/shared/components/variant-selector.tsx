@@ -60,6 +60,29 @@ export const VariantSelector = ({
     (variant) => variant.price.amount === 0,
   );
 
+  const singleVariant =
+    product.variants?.length === 1 ? product.variants[0] : null;
+
+  const selectedVariantId = singleVariant
+    ? singleVariant.id
+    : matchingVariants?.length > 1
+      ? discriminatedVariantId
+      : chosenVariant
+        ? chosenVariant.id
+        : areAllRequiredSelectionAttributesChosen
+          ? "NOTIFY_ME"
+          : "";
+
+  const selectedVariantAvailable = singleVariant
+    ? true
+    : matchingVariants?.length > 1
+      ? true
+      : chosenVariant
+        ? isChosenVariantAvailable
+        : areAllRequiredSelectionAttributesChosen
+          ? false
+          : true;
+
   return (
     <>
       <p className="py-4 text-lg font-semibold text-left">
@@ -71,137 +94,123 @@ export const VariantSelector = ({
         />
       </p>
 
-      <div className="[&>div]:pb-4">
-        {allSelectionAttributes.map(({ slug, name, values, type }, index) => {
-          const isPreviousAttributeSelected =
-            index === 0 ? true : !!chosenAttributes[index - 1]?.value;
+      {!singleVariant && (
+        <div className="[&>div]:pb-4">
+          {allSelectionAttributes.map(({ slug, name, values, type }, index) => {
+            const isPreviousAttributeSelected =
+              index === 0 ? true : !!chosenAttributes[index - 1]?.value;
 
-          const chosenAttribute = chosenAttributes.find((val) => {
-            if (val?.slug === slug) {
-              return values.some((v) => v.slug === val.value);
-            }
+            const chosenAttribute = chosenAttributes.find((val) => {
+              if (val?.slug === slug) {
+                return values.some((v) => v.slug === val.value);
+              }
 
-            return false;
-          });
+              return false;
+            });
 
-          return (
-            <div key={slug} className="flex flex-col gap-1.5">
-              <Label id={`label-${slug}`} className="text-foreground">
-                {name}
-                {type === "SWATCH" &&
-                  !!chosenAttribute?.value &&
-                  `: ${chosenAttribute.value}`}
-              </Label>
+            return (
+              <div key={slug} className="flex flex-col gap-1.5">
+                <Label id={`label-${slug}`} className="text-foreground">
+                  {name}
+                  {type === "SWATCH" &&
+                    !!chosenAttribute?.value &&
+                    `: ${chosenAttribute.value}`}
+                </Label>
 
-              <ToggleGroup
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                value={!chosenAttribute?.value ? null : chosenAttribute?.value}
-                type="single"
-                disabled={!isPreviousAttributeSelected}
-                className={cn(
-                  type === "SWATCH"
-                    ? "flex justify-start"
-                    : "grid grid-cols-2 md:grid-cols-3",
-                )}
-                aria-labelledby={t("products.label-slug", { slug })}
-                onValueChange={(valueSlug) => {
-                  setDiscriminatedVariantId("");
-                  setParams({
-                    ...params,
-                    [slug]: valueSlug,
-                  }).catch((e) => {
-                    console.error(e);
-                  });
-                }}
-              >
-                {values
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map(({ slug: valueSlug, name: valueName, value }) => {
-                    const isSelected = chosenAttributes.some(
-                      (attr) =>
-                        attr?.slug === slug && attr?.value === valueSlug,
-                    );
+                <ToggleGroup
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  value={
+                    !chosenAttribute?.value ? null : chosenAttribute?.value
+                  }
+                  type="single"
+                  disabled={!isPreviousAttributeSelected}
+                  className={cn(
+                    type === "SWATCH"
+                      ? "flex justify-start"
+                      : "grid grid-cols-2 md:grid-cols-3",
+                  )}
+                  aria-labelledby={t("products.label-slug", { slug })}
+                  onValueChange={(valueSlug) => {
+                    setDiscriminatedVariantId("");
+                    setParams({
+                      ...params,
+                      [slug]: valueSlug,
+                    }).catch((e) => {
+                      console.error(e);
+                    });
+                  }}
+                >
+                  {values
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(({ slug: valueSlug, name: valueName, value }) => {
+                      const isSelected = chosenAttributes.some(
+                        (attr) =>
+                          attr?.slug === slug && attr?.value === valueSlug,
+                      );
 
-                    return type === "SWATCH" ? (
-                      <ToggleGroupItem
-                        disabled={!isPreviousAttributeSelected}
-                        variant="default"
-                        key={valueSlug}
-                        value={valueSlug}
-                        className={cn(
-                          cn(
-                            "flex max-w-min flex-col hover:bg-transparent data-[state=on]:bg-transparent",
-                          ),
-                          !isPreviousAttributeSelected && "opacity-50",
-                        )}
-                        size="default"
-                      >
-                        <div
-                          className={cn("h-6 w-6 border border-stone-200")}
-                          style={{
-                            backgroundColor: value,
-                          }}
-                        />
-
-                        <div
+                      return type === "SWATCH" ? (
+                        <ToggleGroupItem
+                          disabled={!isPreviousAttributeSelected}
+                          variant="default"
+                          key={valueSlug}
+                          value={valueSlug}
                           className={cn(
-                            "bg-foreground invisible mt-1 h-[2px] w-6",
-                            isSelected && "visible",
+                            "flex max-w-min flex-col hover:bg-transparent data-[state=on]:bg-transparent",
+                            !isPreviousAttributeSelected && "opacity-50",
                           )}
-                        ></div>
-                      </ToggleGroupItem>
-                    ) : (
-                      <ToggleGroupItem
-                        disabled={!isPreviousAttributeSelected}
-                        variant="outline"
-                        key={valueSlug}
-                        value={valueSlug}
-                      >
-                        {valueName}
-                      </ToggleGroupItem>
-                    );
-                  })}
-              </ToggleGroup>
-            </div>
-          );
-        })}
+                          size="default"
+                        >
+                          <div
+                            className="h-6 w-6 border border-stone-200"
+                            style={{
+                              backgroundColor: value,
+                            }}
+                          />
 
-        {matchingVariants?.length > 1 && (
-          <div className="flex flex-col gap-1.5">
-            <VariantDropdown
-              variants={matchingVariants}
-              onVariantSelect={(variantId) => {
-                setDiscriminatedVariantId(variantId);
-              }}
-              selectedVariantId={discriminatedVariantId}
-            />
-          </div>
-        )}
-      </div>
+                          <div
+                            className={cn(
+                              "invisible mt-1 h-[2px] w-6 bg-foreground",
+                              isSelected && "visible",
+                            )}
+                          />
+                        </ToggleGroupItem>
+                      ) : (
+                        <ToggleGroupItem
+                          disabled={!isPreviousAttributeSelected}
+                          variant="outline"
+                          key={valueSlug}
+                          value={valueSlug}
+                        >
+                          {valueName}
+                        </ToggleGroupItem>
+                      );
+                    })}
+                </ToggleGroup>
+              </div>
+            );
+          })}
+
+          {matchingVariants?.length > 1 && (
+            <div className="flex flex-col gap-1.5">
+              <VariantDropdown
+                variants={matchingVariants}
+                onVariantSelect={(variantId) => {
+                  setDiscriminatedVariantId(variantId);
+                }}
+                selectedVariantId={discriminatedVariantId}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       <AddToBag
         cart={marketplaceEnabled ? cart : null}
         cartPath={cartPath}
         productVendorId={marketplaceEnabled ? (product.vendorId ?? null) : null}
-        variantId={
-          matchingVariants?.length > 1
-            ? discriminatedVariantId
-            : chosenVariant
-              ? chosenVariant?.id
-              : areAllRequiredSelectionAttributesChosen
-                ? "NOTIFY_ME"
-                : ""
-        }
-        isVariantAvailable={
-          matchingVariants?.length > 1
-            ? true
-            : chosenVariant
-              ? isChosenVariantAvailable
-              : areAllRequiredSelectionAttributesChosen
-                ? false
-                : true
-        }
+        variantId={selectedVariantId}
+        isVariantAvailable={selectedVariantAvailable}
         addToBagAction={addToBagAction}
       />
 
@@ -212,25 +221,11 @@ export const VariantSelector = ({
         <AddToBag
           cart={marketplaceEnabled ? cart : null}
           cartPath={cartPath}
-          productVendorId={marketplaceEnabled ? (product.vendorId ?? null) : null}
-          variantId={
-            matchingVariants?.length > 1
-              ? discriminatedVariantId
-              : chosenVariant
-                ? chosenVariant?.id
-                : areAllRequiredSelectionAttributesChosen
-                  ? "NOTIFY_ME"
-                  : ""
+          productVendorId={
+            marketplaceEnabled ? (product.vendorId ?? null) : null
           }
-          isVariantAvailable={
-            matchingVariants?.length > 1
-              ? true
-              : chosenVariant
-                ? isChosenVariantAvailable
-                : areAllRequiredSelectionAttributesChosen
-                  ? false
-                  : true
-          }
+          variantId={selectedVariantId}
+          isVariantAvailable={selectedVariantAvailable}
           addToBagAction={addToBagAction}
         />
       </StickyBar>
