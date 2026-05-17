@@ -69,7 +69,7 @@ export function StickyBar({
 			<div className="mx-auto flex max-w-7xl flex-row items-center justify-between gap-4 px-4 py-3">
 				<div className="min-w-0">
 					<p>{productName}</p>
-					<p className="text-sm text-muted-foreground">{price}</p>
+					<p className="line-clamp-2 text-sm text-muted-foreground">{price}</p>
 				</div>
 
 				{children && <div className="w-1/2">{children}</div>}
