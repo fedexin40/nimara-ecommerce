@@ -52,7 +52,6 @@ export const AttributesDropdown = ({ product }: { product: Product }) => {
       className="mt-4"
       type="single"
       collapsible
-      defaultValue={attributesToDisplay[0]?.name}
     >
       {attributesToDisplay.map((attribute) => {
         if (
