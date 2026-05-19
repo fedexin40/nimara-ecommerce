@@ -214,6 +214,17 @@ export const VariantSelector = ({
         addToBagAction={addToBagAction}
       />
 
+      {/* Trust Signals */}
+      <div className="flex items-center justify-center gap-6 pt-5 text-xs">
+        <span className="flex items-center gap-1.5">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path d="M9 22V12h6v10" />
+          </svg>
+          Envío gratis en compras mayores de $1500 MXN
+        </span>
+      </div>
+
       <StickyBar
         price={startPrice.amount + " " + startPrice.currency}
         productName={product.name}
