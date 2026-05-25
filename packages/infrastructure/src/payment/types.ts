@@ -2,6 +2,8 @@ import type {
   Appearance,
   Stripe as StripeClient,
   StripeElements,
+  StripeExpressCheckoutElement,
+  StripeExpressCheckoutElementOptions,
   StripePaymentElement,
   StripePaymentElementOptions,
 } from "@stripe/stripe-js";
@@ -19,6 +21,7 @@ export type StripeServiceState = PaymentServiceState<{
   clientSDK: StripeClient;
   customerId: Maybe<string>;
   elements: StripeElements;
+  expressCheckoutElement: StripeExpressCheckoutElement;
   id: string;
   paymentElement: StripePaymentElement;
   transactionId: string;
@@ -74,6 +77,30 @@ export type PaymentElementCreateInfra = (opts: {
 }>;
 
 export type PaymentElementCreateUseCase = PaymentElementCreateInfra;
+
+export type ExpressCheckoutElementCreateInfra = (opts: {
+  /**
+   * Nuevo modo: deferred intent creation.
+   * Stripe renderiza Express Checkout antes de crear el PaymentIntent.
+   */
+  amount?: number;
+  appearance?: Appearance;
+  currency?: string;
+  locale?: string;
+  options?: StripeExpressCheckoutElementOptions;
+
+  /**
+   * Modo actual: crea Elements con clientSecret.
+   */
+  secret?: string;
+
+}) => Promise<{
+  mount: (targetElement: HTMLElement) => void;
+  on: StripeExpressCheckoutElement["on"];
+  unmount: () => void;
+}>;
+
+export type ExpressCheckoutElementCreateUseCase = ExpressCheckoutElementCreateInfra;
 
 export type ClientInitializeInfra = () => Promise<void>;
 

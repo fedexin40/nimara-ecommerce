@@ -4,6 +4,14 @@ import { type Locale } from "next-intl";
 import { type AllCountryCode } from "@nimara/domain/consts";
 import { type AppErrorCode } from "@nimara/domain/objects/Error";
 import { redirect } from "@nimara/i18n/routing";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@nimara/ui/components/card";
 
 import {
   MARKETPLACE_DEFAULT_VENDOR_DISPLAY_NAME,
@@ -24,6 +32,7 @@ import {
   getCheckoutShippingAddressSectionData,
 } from "@/foundation/checkout";
 import * as foundationActions from "@/foundation/checkout";
+import { ExpressCheckout } from "@/foundation/checkout/sections/payment/express-checkout";
 import { getCheckoutPaymentSectionData } from "@/foundation/checkout/sections/payment/server";
 import { paths } from "@/foundation/routing/paths";
 import { getServiceRegistry } from "@/services/registry";
@@ -150,6 +159,26 @@ export default async function Page(props: PageProps) {
         />
       }
     >
+      <Card className="overflow-hidden">
+        <CardHeader>
+          <CardTitle>Pago express</CardTitle>
+          <CardDescription>
+            Paga rápido con Google Pay, Apple Pay o Link.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <ExpressCheckout
+            checkoutId={primaryCheckout.id}
+            amount={primaryCheckout.totalPrice.gross.amount}
+            currency={primaryCheckout.totalPrice.gross.currency}
+          />
+        </CardContent>
+
+        <CardFooter>
+          Continua a la siguiente sección si no quieres usar Pago express
+        </CardFooter>
+      </Card>
       <CheckoutSections
         step={currentStep}
         checkout={primaryCheckout}

@@ -28,6 +28,13 @@ export default function CheckoutLayout({
   return (
     <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
       <header className="container flex items-center justify-between">
+        <link rel="preconnect" href="https://js.stripe.com" />
+        <link rel="preconnect" href="https://m.stripe.network" />
+        <link rel="preconnect" href="https://q.stripe.com" />
+
+        <link rel="dns-prefetch" href="https://js.stripe.com" />
+        <link rel="dns-prefetch" href="https://m.stripe.network" />
+        <link rel="dns-prefetch" href="https://q.stripe.com" />
         <div className="bg-background px-0 py-4">
           <Logo />
         </div>

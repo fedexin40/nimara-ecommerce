@@ -1,3 +1,4 @@
+import { createExpressCheckoutElementUseCase } from "#root/use-cases/payment/create-express-checkout-element-use-case";
 import { createPaymentElementUseCase } from "#root/use-cases/payment/create-payment-element-use-case";
 import { customerGetUseCase } from "#root/use-cases/payment/customer-get-use-case";
 import { customerPaymentMethodDeleteUseCase } from "#root/use-cases/payment/customer-payment-method-delete-use-case";
@@ -16,6 +17,7 @@ import { customerFromSaleorGetInfra } from "./stripe/infrastructure/customer-fro
 import { customerInGatewayCreateInfra } from "./stripe/infrastructure/customer-in-gateway-create-infra";
 import { customerInSaleorSave } from "./stripe/infrastructure/customer-in-saleor-save";
 import { customerPaymentMethodValidateInfra } from "./stripe/infrastructure/customer-payment-method-validate-infra";
+import { expressCheckoutElementCreateInfra } from "./stripe/infrastructure/express-checkout-element-create-infra";
 import { paymentElementCreateInfra } from "./stripe/infrastructure/payment-element-create-infra";
 import { paymentExecuteInfra } from "./stripe/infrastructure/payment-execute-infra";
 import { paymentGatewayInitializeInfra } from "./stripe/infrastructure/payment-gateway-initialize-infra";
@@ -38,6 +40,7 @@ export type StripePaymentService = {
   customerPaymentMethodsList: ReturnType<
     typeof customerPaymentMethodsListUseCase
   >;
+  expressCheckoutElementCreate: ReturnType<typeof createExpressCheckoutElementUseCase>;
   paymentElementCreate: ReturnType<typeof createPaymentElementUseCase>;
   paymentExecute: ReturnType<typeof paymentExecuteUseCase>;
   paymentGatewayInitialize: ReturnType<typeof paymentGatewayInitializeUseCase>;
@@ -70,6 +73,9 @@ export const stripePaymentService = (config: PaymentServiceConfig) => {
     }),
     paymentElementCreate: createPaymentElementUseCase({
       paymentElementCreate: paymentElementCreateInfra(state),
+    }),
+    expressCheckoutElementCreate: createExpressCheckoutElementUseCase({
+      expressCheckoutElementCreate: expressCheckoutElementCreateInfra(state),
     }),
     paymentExecute: paymentExecuteUseCase({
       paymentExecute: paymentExecuteInfra(state),

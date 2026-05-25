@@ -21,6 +21,7 @@ export const Logo = () => {
         width={160}
         height={40}
         className="dark:invert"
+        loading="eager"
       />
     </LocalizedLink>
   );
