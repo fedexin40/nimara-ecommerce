@@ -67,9 +67,12 @@ export const expressCheckoutElementCreateInfra =
 
     const on = expressCheckoutElement.on.bind(expressCheckoutElement);
 
+    const update = state.elements.update.bind(state.elements);
+
     return {
       mount,
       unmount,
       on,
+      update,
     };
   };

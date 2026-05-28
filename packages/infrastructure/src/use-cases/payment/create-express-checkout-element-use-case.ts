@@ -10,7 +10,7 @@ export const createExpressCheckoutElementUseCase =
     expressCheckoutElementCreate: ExpressCheckoutElementCreateInfra;
   }): ExpressCheckoutElementCreateUseCase =>
   async ({ locale, secret, amount, currency, appearance, options }) => {
-    const { mount, unmount, on } = await expressCheckoutElementCreate({
+    const { mount, unmount, on, update } = await expressCheckoutElementCreate({
       locale,
       secret,
       amount,
@@ -23,5 +23,6 @@ export const createExpressCheckoutElementUseCase =
       mount,
       unmount,
       on,
+      update
     };
   };
