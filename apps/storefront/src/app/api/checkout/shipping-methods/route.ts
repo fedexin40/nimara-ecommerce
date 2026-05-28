@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+const shipping_url = process.env.NEXT_PUBLIC_SHIPPING_URL;
+
 export async function POST(request: NextRequest) {
   try {
     // Body recibido desde el frontend
@@ -7,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Llamada server-to-server a tu app del puerto 4030
     const response = await fetch(
-      "http://localhost:4030/api/checkout/shipping-methods",
+      `${shipping_url}/api/checkout/shipping-methods`,
       {
         method: "POST",
         headers: {
