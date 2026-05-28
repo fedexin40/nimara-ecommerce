@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { type Checkout } from "@nimara/domain/objects/Checkout";
 import { type User } from "@nimara/domain/objects/User";
 import { LocalizedLink, useRouter } from "@nimara/i18n/routing";
-import { Card } from "@nimara/ui/components/card";
+import { Card, CardHeader, CardTitle } from "@nimara/ui/components/card";
 import { Separator } from "@nimara/ui/components/separator";
 
 import { clientEnvs } from "@/envs/client";
@@ -100,6 +100,9 @@ export const CheckoutSections = ({
 
   return (
     <Card className="overflow-hidden">
+      <CardHeader>
+        <CardTitle>Pago Tradicional</CardTitle>
+      </CardHeader>
       <CheckoutUserDetailsSection
         checkout={checkoutForSections}
         isOpen={step === "user-details"}

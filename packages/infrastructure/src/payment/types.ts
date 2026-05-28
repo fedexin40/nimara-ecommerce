@@ -98,6 +98,7 @@ export type ExpressCheckoutElementCreateInfra = (opts: {
   mount: (targetElement: HTMLElement) => void;
   on: StripeExpressCheckoutElement["on"];
   unmount: () => void;
+  update: StripeElements["update"];
 }>;
 
 export type ExpressCheckoutElementCreateUseCase = ExpressCheckoutElementCreateInfra;
