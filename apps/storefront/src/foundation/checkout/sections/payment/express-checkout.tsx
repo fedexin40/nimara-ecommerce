@@ -81,7 +81,20 @@ export function ExpressCheckout({
 
         const paymentService = await paymentServiceLoader();
 
-        await paymentService.paymentInitialize();
+        const [gatewayInitializeResult] = await Promise.all([
+          paymentService.paymentGatewayInitialize({
+            id: checkoutId,
+            amount,
+          }),
+          paymentService.paymentInitialize(),
+        ]);
+
+        if (!gatewayInitializeResult.ok) {
+          setError("No se pudo inicializar el gateway de pago.");
+          intentKeyRef.current = null;
+
+          return;
+        }
 
         if (isCancelled || !containerRef.current) {
           intentKeyRef.current = null;
