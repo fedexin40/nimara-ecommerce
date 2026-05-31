@@ -45,6 +45,10 @@ export function ExpressCheckout({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const intentKeyRef = useRef<string | null>(null);
 
+  const paymentIntentPromiseRef = useRef<Promise<PaymentTransaction> | null>(
+    null,
+  );
+
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,16 +77,9 @@ export function ExpressCheckout({
       try {
         setError(null);
         setIsMounted(false);
+        paymentIntentPromiseRef.current = null;
 
         const paymentService = await paymentServiceLoader();
-
-        const paymentIntentPromise =
-          paymentService.paymentGatewayTransactionInitialize({
-            id: checkoutId,
-            amount,
-            customerId: paymentGatewayCustomer,
-            saveForFutureUse: false,
-          }) as Promise<PaymentTransaction>;
 
         await paymentService.paymentInitialize();
 
@@ -135,6 +132,37 @@ export function ExpressCheckout({
           intentKeyRef.current = null;
         });
 
+        expressCheckout.on("click", (event) => {
+          paymentIntentPromiseRef.current =
+            paymentService.paymentGatewayTransactionInitialize({
+              id: checkoutId,
+              amount,
+              customerId: paymentGatewayCustomer,
+              saveForFutureUse: false,
+            }) as Promise<PaymentTransaction>;
+
+          expressCheckout.update({
+            amount: stripeAmount,
+          });
+
+          event.resolve({
+            lineItems: [
+              {
+                name: "Subtotal",
+                amount: stripeAmount,
+              },
+            ],
+          });
+        });
+
+        expressCheckout.on("cancel", () => {
+          paymentIntentPromiseRef.current = null;
+
+          expressCheckout.update({
+            amount: stripeAmount,
+          });
+        });
+
         expressCheckout.on("shippingaddresschange", async (event) => {
           try {
             const shippingMethods = (await fetch(
@@ -155,28 +183,80 @@ export function ExpressCheckout({
               },
             ).then((res) => res.json())) as SkydropxShippingMethod[];
 
+            if (!shippingMethods.length) {
+              event.reject();
+
+              return;
+            }
+
+            const shippingRates = shippingMethods.map((method) => ({
+              id: method.id,
+              displayName: method.provider_name,
+              amount: Math.round(method.total * 100),
+              deliveryEstimate: {
+                minimum: {
+                  unit: "business_day" as const,
+                  value: 1,
+                },
+                maximum: {
+                  unit: "business_day" as const,
+                  value: method.days,
+                },
+              },
+            }));
+
+            const defaultShippingRate = shippingRates[0];
+            const defaultShippingAmount = defaultShippingRate.amount;
+            const totalAmount = stripeAmount + defaultShippingAmount;
+
+            const transaction = await paymentIntentPromiseRef.current;
+
+            if (!transaction?.ok) {
+              event.reject();
+
+              return;
+            }
+
+            const paymentIntentId = getPaymentIntentIdFromClientSecret(
+              transaction.data.clientSecret,
+            );
+
+            const response = await fetch(
+              "/api/checkout/update-payment-intent",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  paymentIntentId,
+                  amount: totalAmount,
+                }),
+              },
+            );
+
+            if (!response.ok) {
+              event.reject();
+
+              return;
+            }
+
+            expressCheckout.update({
+              amount: totalAmount,
+            });
+
             event.resolve({
               lineItems: [
                 {
                   name: "Subtotal",
                   amount: stripeAmount,
                 },
-              ],
-              shippingRates: shippingMethods.map((method) => ({
-                id: method.id,
-                displayName: method.provider_name,
-                amount: Math.round(method.total * 100),
-                deliveryEstimate: {
-                  minimum: {
-                    unit: "business_day",
-                    value: 1,
-                  },
-                  maximum: {
-                    unit: "business_day",
-                    value: method.days,
-                  },
+                {
+                  name: "Envío",
+                  amount: defaultShippingAmount,
                 },
-              })),
+              ],
+              shippingRates,
             });
           } catch (error) {
             console.error("Shipping address change error:", error);
@@ -189,9 +269,9 @@ export function ExpressCheckout({
             const shippingAmount = event.shippingRate.amount;
             const totalAmount = stripeAmount + shippingAmount;
 
-            const transaction = await paymentIntentPromise;
+            const transaction = await paymentIntentPromiseRef.current;
 
-            if (!transaction.ok) {
+            if (!transaction?.ok) {
               event.reject();
 
               return;
@@ -245,9 +325,9 @@ export function ExpressCheckout({
 
         expressCheckout.on("confirm", async (event) => {
           try {
-            const transaction = await paymentIntentPromise;
+            const transaction = await paymentIntentPromiseRef.current;
 
-            if (!transaction.ok) {
+            if (!transaction?.ok) {
               event.paymentFailed({ reason: "fail" });
 
               return;
@@ -280,16 +360,10 @@ export function ExpressCheckout({
 
     return () => {
       isCancelled = true;
+      paymentIntentPromiseRef.current = null;
       unmount?.();
     };
-  }, [
-    checkoutId,
-    amount,
-    currency,
-    paymentGatewayCustomer,
-    region.language.locale,
-    isDark,
-  ]);
+  }, [checkoutId, amount, currency, paymentGatewayCustomer]);
 
   return (
     <div className="space-y-4">
