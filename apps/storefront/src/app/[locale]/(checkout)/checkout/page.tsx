@@ -170,8 +170,8 @@ export default async function Page(props: PageProps) {
         <CardContent>
           <ExpressCheckout
             checkoutId={primaryCheckout.id}
-            amount={primaryCheckout.totalPrice.gross.amount}
-            currency={primaryCheckout.totalPrice.gross.currency}
+            amount={primaryCheckout.subtotalPrice.gross.amount}
+            currency={primaryCheckout.subtotalPrice.gross.currency}
           />
         </CardContent>
 

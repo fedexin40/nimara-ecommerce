@@ -488,6 +488,17 @@ export const Payment = ({
             paymentMethodLogoPosition: "start",
             defaultCollapsed: true,
           },
+          wallets: {
+            applePay: "never",
+            googlePay: "never",
+          },
+          defaultValues: {
+            billingDetails: {
+              name: `${checkout.shippingAddress?.firstName} ${checkout.shippingAddress?.lastName}`,
+              email: checkout.email || "",
+              phone: checkout.shippingAddress?.phone || "",
+            },
+          },
         },
       });
 
