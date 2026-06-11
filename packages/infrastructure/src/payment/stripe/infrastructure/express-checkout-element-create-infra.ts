@@ -8,6 +8,7 @@ import type {
 
 const mapToStripeLocale: Record<string, StripeElementLocale> = {
   "en-US": "en",
+  "es-MX": "es",
 };
 
 export const expressCheckoutElementCreateInfra =
@@ -22,7 +23,7 @@ export const expressCheckoutElementCreateInfra =
   }) => {
     invariant(state.clientSDK, "Stripe client not initialized.");
 
-    const mappedLocale = mapToStripeLocale[locale] ?? locale;
+    const mappedLocale = mapToStripeLocale[locale] ?? "auto";
 
     if (secret) {
       state.elements = state.clientSDK.elements({

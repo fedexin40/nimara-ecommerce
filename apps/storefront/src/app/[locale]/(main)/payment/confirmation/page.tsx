@@ -78,19 +78,6 @@ export default async function Page(props: PageProps) {
     } else {
       errors = resultOrderCreate.errors;
     }
-  } else {
-    const firstError = resultPaymentProcess.errors?.[0];
-    const errorCode = firstError ? firstError.code : "DEFAULT_PAYMENT_ERROR";
-
-    redirect({
-      href: paths.checkout.asPath({
-        query: {
-          step: "payment",
-          [QUERY_PARAMS.errorCode]: errorCode,
-        },
-      }),
-      locale,
-    });
   }
 
   return (

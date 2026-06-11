@@ -60,7 +60,7 @@ export default async function Page(props: PageProps) {
       props.searchParams,
       isMarketplaceEnabled
         ? getMarketplaceCheckoutsOrRedirect()
-        : getCheckoutOrRedirect(),
+        : getCheckoutOrRedirect(true),
       getAccessToken(),
       getServiceRegistry(),
     ]);
@@ -161,7 +161,7 @@ export default async function Page(props: PageProps) {
     >
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Pago express</CardTitle>
+          <CardTitle>Pago Express</CardTitle>
           <CardDescription>
             Paga rápido con Google Pay, Apple Pay o Link.
           </CardDescription>

@@ -25,7 +25,9 @@ import { getServiceRegistry } from "@/services/registry";
  * @returns {Promise<Checkout>} The current valid checkout object.
  * @throws Redirects to the cart page on error or missing/invalid checkout.
  */
-export const getCheckoutOrRedirect = async (): Promise<Checkout> | never => {
+export const getCheckoutOrRedirect = async (
+  redirectOnError = false,
+): Promise<Checkout> | never => {
   const checkoutId = await getCheckoutId();
   const [locale, region] = await Promise.all([getLocale(), getCurrentRegion()]);
 
@@ -42,8 +44,12 @@ export const getCheckoutOrRedirect = async (): Promise<Checkout> | never => {
   });
 
   if (!resultCheckout.ok) {
-    await deleteCheckoutIdCookie();
-    redirect({ href: paths.cart.asPath(), locale });
+    const redirectValue = redirectOnError ? "true" : "false";
+
+    redirect({
+      href: `/api/checkout/clear?redirect=${redirectValue}`,
+      locale,
+    });
   }
 
   await validateCheckoutLinesAction({

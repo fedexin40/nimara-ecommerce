@@ -23,6 +23,11 @@ type SkydropxShippingMethod = {
   total: number;
 };
 
+type SkydropxShippingMethodsResponse = {
+  quotation_id: string;
+  shipping_methods: SkydropxShippingMethod[];
+};
+
 type PaymentTransaction = {
   data: {
     clientSecret: string;
@@ -44,6 +49,8 @@ export function ExpressCheckout({
   const region = useCurrentRegion();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const intentKeyRef = useRef<string | null>(null);
+  const quotationIdRef = useRef<string | null>(null);
+  const defaultShippingRateIdRef = useRef<string | null>(null);
 
   const paymentIntentPromiseRef = useRef<Promise<PaymentTransaction> | null>(
     null,
@@ -61,7 +68,6 @@ export function ExpressCheckout({
       currency: currency.toLowerCase(),
       customerId: paymentGatewayCustomer ?? null,
       locale: region.language.locale,
-      isDark,
     });
 
     if (intentKeyRef.current === intentKey) {
@@ -73,11 +79,21 @@ export function ExpressCheckout({
     let isCancelled = false;
     let unmount: (() => void) | undefined;
 
+    const readyTimeout: number | undefined = window.setTimeout(() => {
+      if (!isCancelled) {
+        setError(null);
+        setIsMounted(true);
+        intentKeyRef.current = null;
+      }
+    }, 5000);
+
     void (async () => {
       try {
         setError(null);
         setIsMounted(false);
         paymentIntentPromiseRef.current = null;
+        quotationIdRef.current = null;
+        defaultShippingRateIdRef.current = null;
 
         const paymentService = await paymentServiceLoader();
 
@@ -90,7 +106,8 @@ export function ExpressCheckout({
         ]);
 
         if (!gatewayInitializeResult.ok) {
-          setError("No se pudo inicializar el gateway de pago.");
+          setError(null);
+          setIsMounted(true);
           intentKeyRef.current = null;
 
           return;
@@ -136,12 +153,23 @@ export function ExpressCheckout({
         }
 
         expressCheckout.on("ready", () => {
+          if (readyTimeout !== undefined) {
+            window.clearTimeout(readyTimeout);
+          }
+
           setIsMounted(true);
         });
 
         expressCheckout.on("loaderror", (event) => {
+          if (readyTimeout !== undefined) {
+            window.clearTimeout(readyTimeout);
+          }
+
           console.error("Express Checkout load error:", event);
-          setError("No se pudieron cargar los botones de pago express.");
+
+          setError(null);
+          setIsMounted(true);
+
           intentKeyRef.current = null;
         });
 
@@ -170,6 +198,8 @@ export function ExpressCheckout({
 
         expressCheckout.on("cancel", () => {
           paymentIntentPromiseRef.current = null;
+          quotationIdRef.current = null;
+          defaultShippingRateIdRef.current = null;
 
           expressCheckout.update({
             amount: stripeAmount,
@@ -178,7 +208,7 @@ export function ExpressCheckout({
 
         expressCheckout.on("shippingaddresschange", async (event) => {
           try {
-            const shippingMethods = (await fetch(
+            const shippingMethodsResponse = (await fetch(
               "/api/checkout/shipping-methods",
               {
                 method: "POST",
@@ -194,13 +224,18 @@ export function ExpressCheckout({
                   },
                 }),
               },
-            ).then((res) => res.json())) as SkydropxShippingMethod[];
+            ).then((res) => res.json())) as SkydropxShippingMethodsResponse;
 
+            const shippingMethods = shippingMethodsResponse.shipping_methods;
+
+            console.log(shippingMethods);
             if (!shippingMethods.length) {
               event.reject();
 
               return;
             }
+
+            quotationIdRef.current = shippingMethodsResponse.quotation_id;
 
             const shippingRates = shippingMethods.map((method) => ({
               id: method.id,
@@ -219,6 +254,9 @@ export function ExpressCheckout({
             }));
 
             const defaultShippingRate = shippingRates[0];
+
+            defaultShippingRateIdRef.current = defaultShippingRate.id;
+
             const defaultShippingAmount = defaultShippingRate.amount;
             const totalAmount = stripeAmount + defaultShippingAmount;
 
@@ -365,8 +403,15 @@ export function ExpressCheckout({
 
         unmount = expressCheckout.unmount;
       } catch (error) {
+        if (readyTimeout !== undefined) {
+          window.clearTimeout(readyTimeout);
+        }
+
         console.error(error);
-        setError("Ocurrió un error inicializando Express Checkout.");
+
+        setError(null);
+        setIsMounted(true);
+
         intentKeyRef.current = null;
       }
     })();
@@ -374,9 +419,23 @@ export function ExpressCheckout({
     return () => {
       isCancelled = true;
       paymentIntentPromiseRef.current = null;
+      quotationIdRef.current = null;
+      defaultShippingRateIdRef.current = null;
+      intentKeyRef.current = null;
+
+      if (readyTimeout !== undefined) {
+        window.clearTimeout(readyTimeout);
+      }
+
       unmount?.();
     };
-  }, [checkoutId, amount, currency, paymentGatewayCustomer]);
+  }, [
+    checkoutId,
+    amount,
+    currency,
+    paymentGatewayCustomer,
+    region.language.locale,
+  ]);
 
   return (
     <div className="space-y-4">
