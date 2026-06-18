@@ -2,11 +2,43 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import type { Checkout } from "@nimara/domain/objects/Checkout";
+
 import { useCurrentRegion } from "@/foundation/regions";
+import { paths } from "@/foundation/routing/paths";
 import { createPaymentServiceLoader } from "@/services/lazy-loaders/payment";
 import { storefrontLogger } from "@/services/logging";
 
 const paymentServiceLoader = createPaymentServiceLoader(storefrontLogger);
+
+type ConfirmShippingResult = {
+  billingAddress: Checkout["billingAddress"];
+  ok: boolean;
+};
+
+type ExpressCheckoutConfirmEvent = {
+  billingDetails?: {
+    email?: string | null;
+    phone?: string | null;
+  };
+  paymentFailed: (payload: { reason: "fail" }) => void;
+  shippingAddress?: {
+    address?: {
+      city?: string | null;
+      country?: string | null;
+      line1?: string | null;
+      line2?: string | null;
+      postal_code?: string | null;
+      state?: string | null;
+    };
+    name?: string | null;
+  };
+  shippingRate?: {
+    amount?: number;
+    displayName?: string;
+    id?: string;
+  };
+};
 
 type ExpressCheckoutProps = {
   amount: number;
@@ -14,6 +46,7 @@ type ExpressCheckoutProps = {
   currency: string;
   isDark?: boolean;
   paymentGatewayCustomer?: string | null;
+  storeUrl: string | undefined;
 };
 
 type SkydropxShippingMethod = {
@@ -35,6 +68,31 @@ type PaymentTransaction = {
   ok: boolean;
 };
 
+export function stripeExpressCheckoutToShippingAddressInput(
+  event: ExpressCheckoutConfirmEvent,
+) {
+  const shippingAddress = event.shippingAddress;
+  const address = shippingAddress?.address;
+
+  const fullName = shippingAddress?.name ?? "";
+  const [firstName = "", ...lastNameParts] = fullName.trim().split(/\s+/);
+
+  return {
+    firstName,
+    lastName: lastNameParts.join(" "),
+    companyName: "",
+    streetAddress1: address?.line1 ?? "",
+    streetAddress2: address?.line2 ?? "",
+    city: address?.city ?? "",
+    cityArea: address?.line2 ?? "",
+    countryArea: address?.state ?? "",
+    postalCode: address?.postal_code ?? "",
+    country: address?.country ?? "",
+    phone: event.billingDetails?.phone ?? "",
+    saveForFutureUse: false,
+  };
+}
+
 function getPaymentIntentIdFromClientSecret(clientSecret: string) {
   return clientSecret.split("_secret_")[0];
 }
@@ -45,6 +103,7 @@ export function ExpressCheckout({
   currency,
   paymentGatewayCustomer,
   isDark = false,
+  storeUrl,
 }: ExpressCheckoutProps) {
   const region = useCurrentRegion();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -228,7 +287,6 @@ export function ExpressCheckout({
 
             const shippingMethods = shippingMethodsResponse.shipping_methods;
 
-            console.log(shippingMethods);
             if (!shippingMethods.length) {
               event.reject();
 
@@ -376,6 +434,40 @@ export function ExpressCheckout({
 
         expressCheckout.on("confirm", async (event) => {
           try {
+            const shippingAddressInput =
+              stripeExpressCheckoutToShippingAddressInput(event);
+
+            const shippingRate = event.shippingRate;
+            const shippingMethodName = shippingRate?.displayName;
+            const shippingMethodPrice = shippingRate?.amount;
+            const email = event.billingDetails?.email;
+
+            const confirmShippingResponse = await fetch(
+              "/api/checkout/confirm-checkout-express",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  checkoutId,
+                  shippingAddressInput,
+                  shippingMethodName,
+                  shippingMethodPrice,
+                  email,
+                }),
+              },
+            );
+
+            const confirmShippingResult =
+              (await confirmShippingResponse.json()) as ConfirmShippingResult;
+
+            if (!confirmShippingResponse.ok) {
+              event.paymentFailed({ reason: "fail" });
+
+              return;
+            }
+
             const transaction = await paymentIntentPromiseRef.current;
 
             if (!transaction?.ok) {
@@ -384,10 +476,11 @@ export function ExpressCheckout({
               return;
             }
 
+            const redirectUrl = `${storeUrl}${paths.payment.confirmation.asPath()}`;
             const result = await paymentService.paymentExecute({
-              billingDetails: {},
+              billingDetails: confirmShippingResult.billingAddress ?? {},
               paymentSecret: transaction.data.clientSecret,
-              redirectUrl: `${window.location.origin}/checkout/payment/confirmation`,
+              redirectUrl: redirectUrl,
             });
 
             if (!result.ok) {

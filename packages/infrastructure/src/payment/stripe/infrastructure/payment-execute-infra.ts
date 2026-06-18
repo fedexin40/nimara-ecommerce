@@ -44,8 +44,16 @@ export const paymentExecuteInfra =
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const confirmPaymentParams = paymentSecret
+  ? {
+      clientSecret: paymentSecret,
+      elements: serviceState.elements,
+    }
+  : {
+      elements: serviceState.elements,
+    };
     const { error } = await serviceState.clientSDK.confirmPayment({
+      // @ts-expect-error Stripe types do not correctly infer the overload
       redirect: PAYMENT_REDIRECT,
       confirmParams: {
         return_url: returnUrl.toString(),
@@ -63,9 +71,7 @@ export const paymentExecuteInfra =
           },
         },
       },
-      ...((paymentSecret
-        ? { clientSecret: paymentSecret }
-        : { elements: serviceState.elements }) as any),
+      ...confirmPaymentParams,
     });
 
     if (isUsingNewPaymentMethod) {

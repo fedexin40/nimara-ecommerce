@@ -35,6 +35,7 @@ import * as foundationActions from "@/foundation/checkout";
 import { ExpressCheckout } from "@/foundation/checkout/sections/payment/express-checkout";
 import { getCheckoutPaymentSectionData } from "@/foundation/checkout/sections/payment/server";
 import { paths } from "@/foundation/routing/paths";
+import { getStoreUrl } from "@/foundation/server";
 import { getServiceRegistry } from "@/services/registry";
 import { getAccessToken } from "@/services/tokens";
 
@@ -54,16 +55,23 @@ export const metadata: Metadata = {
 export default async function Page(props: PageProps) {
   const isMarketplaceEnabled = clientEnvs.NEXT_PUBLIC_MARKETPLACE_ENABLED;
 
-  const [{ locale }, searchParams, checkoutData, accessToken, services] =
-    await Promise.all([
-      props.params,
-      props.searchParams,
-      isMarketplaceEnabled
-        ? getMarketplaceCheckoutsOrRedirect()
-        : getCheckoutOrRedirect(true),
-      getAccessToken(),
-      getServiceRegistry(),
-    ]);
+  const [
+    { locale },
+    searchParams,
+    checkoutData,
+    accessToken,
+    services,
+    storeUrl,
+  ] = await Promise.all([
+    props.params,
+    props.searchParams,
+    isMarketplaceEnabled
+      ? getMarketplaceCheckoutsOrRedirect()
+      : getCheckoutOrRedirect(true),
+    getAccessToken(),
+    getServiceRegistry(),
+    getStoreUrl(),
+  ]);
 
   const marketplaceCheckouts = Array.isArray(checkoutData)
     ? checkoutData
@@ -172,6 +180,7 @@ export default async function Page(props: PageProps) {
             checkoutId={primaryCheckout.id}
             amount={primaryCheckout.subtotalPrice.gross.amount}
             currency={primaryCheckout.subtotalPrice.gross.currency}
+            storeUrl={storeUrl}
           />
         </CardContent>
 
