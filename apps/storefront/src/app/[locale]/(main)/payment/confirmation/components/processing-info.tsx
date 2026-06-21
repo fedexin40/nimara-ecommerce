@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { useTimeout } from "usehooks-ts";
 
 import { type Checkout } from "@nimara/domain/objects/Checkout";
 import { type AppErrorCode } from "@nimara/domain/objects/Error";
@@ -20,7 +19,6 @@ const trackingServiceLoader = createTrackingServiceLoader();
 const trackedPurchases = new Set<string>();
 
 const POLL_DELAY_MS = 750;
-const TIME_EXCEEDED_MS = 30 * 1000;
 
 export const ProcessingInfo = ({
   checkout,
@@ -32,10 +30,7 @@ export const ProcessingInfo = ({
   const t = useTranslations();
   const router = useRouter();
   const [errors, setErrors] = useState<{ code: AppErrorCode }[]>([]);
-  const [isTimeExceeded, setIsTimeExceeded] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useTimeout(() => setIsTimeExceeded(true), TIME_EXCEEDED_MS);
 
   useEffect(() => {
     const tick = async () => {

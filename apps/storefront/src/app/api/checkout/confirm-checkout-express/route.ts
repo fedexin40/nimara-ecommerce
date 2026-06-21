@@ -35,8 +35,10 @@ export async function POST(request: Request) {
       const checkoutResult = await checkoutService.checkoutGet({
         checkoutId,
         languageCode: region.language.code,
-        skipCache: true,
         countryCode: shippingAddressInput.country ?? region.market.countryCode,
+        options: {
+          cache: "no-store",
+        },
       });
 
       if (!checkoutResult.ok || !checkoutResult.data?.checkout) {
@@ -90,7 +92,7 @@ export async function POST(request: Request) {
       return NextResponse.json(shippingAddressResult, { status: 400 });
     }
 
-    let checkout = await getUpdatedCheckout();
+    const checkout = await getUpdatedCheckout();
 
     if (!checkout) {
       return NextResponse.json(
@@ -113,8 +115,6 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-
-    checkout = await getUpdatedCheckout();
 
     if (!checkout) {
       return NextResponse.json(

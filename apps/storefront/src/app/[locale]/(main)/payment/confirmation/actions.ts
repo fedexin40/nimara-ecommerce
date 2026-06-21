@@ -6,7 +6,7 @@ import { type AppErrorCode } from "@nimara/domain/objects/Error";
 import { redirect } from "@nimara/i18n/routing";
 
 import { getCheckoutOrRedirect } from "@/features/checkout/checkout-actions";
-import { paths, QUERY_PARAMS } from "@/foundation/routing/paths";
+import { paths } from "@/foundation/routing/paths";
 import { getServiceRegistry } from "@/services/registry";
 
 export type ProcessPaymentResult =
@@ -36,17 +36,11 @@ export const processPaymentAction = async ({
     searchParams,
   });
 
-  // 1. Payment processing errored — redirect back to the payment step.
+  // 1. In Mexico some payments like oxxo are not pay immediately
+  // so instead of failing return to home
   if (!resultPaymentProcess.ok) {
-    const errorCode = resultPaymentProcess.errors[0].code;
-
     redirect({
-      href: paths.checkout.asPath({
-        query: {
-          step: "payment",
-          [QUERY_PARAMS.errorCode]: errorCode,
-        },
-      }),
+      href: paths.home.asPath(),
       locale,
     });
   }

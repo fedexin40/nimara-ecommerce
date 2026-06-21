@@ -67,7 +67,7 @@ export default async function Page(props: PageProps) {
     props.searchParams,
     isMarketplaceEnabled
       ? getMarketplaceCheckoutsOrRedirect()
-      : getCheckoutOrRedirect(true),
+      : getCheckoutOrRedirect(),
     getAccessToken(),
     getServiceRegistry(),
     getStoreUrl(),

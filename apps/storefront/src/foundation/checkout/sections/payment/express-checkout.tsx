@@ -522,13 +522,7 @@ export function ExpressCheckout({
 
       unmount?.();
     };
-  }, [
-    checkoutId,
-    amount,
-    currency,
-    paymentGatewayCustomer,
-    region.language.locale,
-  ]);
+  }, [checkoutId, amount, currency]);
 
   return (
     <div className="space-y-4">

@@ -28,6 +28,22 @@ export const isSaleorConfigured = Boolean(
   clientEnvs.NEXT_PUBLIC_SALEOR_API_URL,
 );
 
+type EmptyExpressCheckoutElement = Awaited<
+  ReturnType<StripePaymentService["expressCheckoutElementCreate"]>
+>;
+
+const noopExpressOn = (() =>
+  emptyExpressCheckoutElement) as unknown as EmptyExpressCheckoutElement["on"];
+const noopExpressUpdate =
+  (() => {}) as unknown as EmptyExpressCheckoutElement["update"];
+
+const emptyExpressCheckoutElement: EmptyExpressCheckoutElement = {
+  mount: (_targetElement: HTMLElement) => {},
+  unmount: () => {},
+  on: noopExpressOn,
+  update: noopExpressUpdate,
+};
+
 const NOT_CONFIGURED_MESSAGE =
   "Saleor API is not configured. Set NEXT_PUBLIC_SALEOR_API_URL to enable this feature.";
 
@@ -129,18 +145,22 @@ export const emptyPaymentService = {
   customerPaymentMethodDelete: async () =>
     notConfigured("PAYMENT_METHOD_NOT_FOUND_ERROR"),
   customerPaymentMethodsList: async () => ok([]),
-  // Not Result-based by contract — returns a detached element handle.
+
   paymentElementCreate: async () => ({
     mount: () => {},
     unmount: () => {},
   }),
+
+  expressCheckoutElementCreate: async () => emptyExpressCheckoutElement,
+
   paymentExecute: async () => notConfigured("PAYMENT_EXECUTE_ERROR"),
   paymentGatewayInitialize: async () =>
     notConfigured("PAYMENT_GATEWAY_INITIALIZE_ERROR"),
   paymentGatewayTransactionInitialize: async () =>
     notConfigured("PAYMENT_GATEWAY_INITIALIZE_ERROR"),
-  // Void by contract — nothing to initialize without a gateway.
+
   paymentInitialize: async () => {},
+
   paymentMethodSaveExecute: async () =>
     notConfigured("PAYMENT_METHOD_SAVE_ERROR"),
   paymentMethodSaveInitialize: async () =>
