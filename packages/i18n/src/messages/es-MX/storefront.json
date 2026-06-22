@@ -135,11 +135,35 @@
     "associated-products": "Productos asociados",
     "collection-image": "Imagen de la colección"
   },
+  "cookie-consent": {
+    "accept-all": "Aceptar todo",
+    "aria-label": "Consentimiento de Cookie",
+    "description": "Usamos las cookies para hacer funcionar nuestro sitio. Con su permiso, también podemos usar las cookies para analizar como es usando el sitio y mejorarlo. Consulte nuestros <termsLink>Terminos de Uso</termsLink> y <privacyLink>Poĺiticas de privacidad</privacyLink>.",
+    "reject-all": "Rechazar todo",
+    "settings": "Configuración",
+    "title": "Usamos Cookies"
+  },
+  "cookie-settings": {
+    "accept-all": "Aceptar todo",
+    "analytics": {
+      "description": "Ayudanos a entender como lo ususarios usan el sitio y asi poder mejorarlo. Incluye Google Analytics a través de Google Tag Manager.",
+      "title": "Análisis"
+    },
+    "description": "Selecciona el tipo de cookies que acepta. Las cookies básicas no pueden ser deshabilitadas por que el sitio no puede funcionar sin ellas.",
+    "necessary": {
+      "description": "Requerido por el sitio para funcionar correctamente: autenticación, carrito, region, preferencias de lenguage. Siempre activada.",
+      "title": "Necesario"
+    },
+    "reject-all": "Rechazar todo",
+    "save": "Guardar preferencias",
+    "title": "Configuración de Cookie"
+  },
   "delivery-method": {
     "delivery-method": "Método de entrega",
     "title": "Entrega"
   },
   "footer": {
+    "cookie-settings": "Configuración de cookies",
     "demo-version": "<link>Esta es la versión demo de Nimara Store.</link>",
     "help": "Ayuda",
     "made-with": "Hecho con ❤️ por <link>Mirumee</link>",
