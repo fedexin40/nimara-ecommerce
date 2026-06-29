@@ -31,6 +31,13 @@ export const processPaymentAction = async ({
 
   const paymentService = await services.getPaymentService();
 
+  const provider = searchParams?.provider;
+
+  // Paypal is not processed here, that's why it is just marked as processing
+  if (provider == "paypal") {
+    return { isProcessing: true };
+  }
+
   const resultPaymentProcess = await paymentService.paymentResultProcess({
     checkout,
     searchParams,

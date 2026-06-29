@@ -25,6 +25,7 @@ import { CheckboxField } from "@nimara/foundation/form-components/checkbox-field
 import { usePathname, useRouter } from "@nimara/i18n/routing";
 import { ADDRESS_DEFAULT_VALUES } from "@nimara/infrastructure/consts";
 import { Button } from "@nimara/ui/components/button";
+import { RadioGroup, RadioGroupItem } from "@nimara/ui/components/radio-group";
 import { Spinner } from "@nimara/ui/components/spinner";
 import {
   Tabs,
@@ -56,6 +57,7 @@ import { createPaymentServiceLoader } from "@/services/lazy-loaders/payment";
 import { createTrackingServiceLoader } from "@/services/lazy-loaders/tracking";
 import { storefrontLogger } from "@/services/logging";
 
+import { PayPalPayment } from "./paypal";
 import { AddressTab } from "./tabs/address-tab";
 
 export type TabName = "new" | "saved";
@@ -82,6 +84,8 @@ type MarketplaceIntentCheckout = {
   checkoutId: string;
   currency: string;
 };
+
+type PaymentProvidersType = "stripe" | "paypal";
 
 const buildMarketplaceIntentKey = ({
   buyerId,
@@ -122,6 +126,9 @@ export const Payment = ({
   const region = useCurrentRegion();
   const { resolvedTheme } = useTheme();
 
+  const [PaymentProvider, setPaymentProvider] = useState<
+    PaymentProvidersType | undefined
+  >(undefined);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -481,6 +488,7 @@ export const Payment = ({
 
     void (async () => {
       const paymentService = await paymentServiceLoader();
+
       const data = await paymentService.paymentElementCreate({
         locale: region.language.locale,
         secret: paymentElementSecret,
@@ -503,7 +511,9 @@ export const Payment = ({
           },
           defaultValues: {
             billingDetails: {
-              name: `${checkout.shippingAddress?.firstName} ${checkout.shippingAddress?.lastName}`,
+              name: `${checkout.shippingAddress?.firstName ?? ""} ${
+                checkout.shippingAddress?.lastName ?? ""
+              }`.trim(),
               email: checkout.email || "",
               phone: checkout.shippingAddress?.phone || "",
             },
@@ -512,6 +522,8 @@ export const Payment = ({
       });
 
       if (isCancelled) {
+        data.unmount?.();
+
         return;
       }
 
@@ -525,6 +537,7 @@ export const Payment = ({
     return () => {
       isCancelled = true;
       unmountPaymentElement?.();
+      setIsMounted(false);
     };
   }, [
     isAddingNewPaymentMethod,
@@ -532,6 +545,10 @@ export const Payment = ({
     isInitialized,
     paymentElementSecret,
     region.language.locale,
+    checkout.email,
+    checkout.shippingAddress?.firstName,
+    checkout.shippingAddress?.lastName,
+    checkout.shippingAddress?.phone,
   ]);
 
   useEffect(() => {
@@ -604,27 +621,145 @@ export const Payment = ({
             </TabsContent>
 
             <TabsContent value="new">
-              {!isMounted && (
-                <div className={cn("flex w-full justify-center py-16")}>
-                  <Spinner />
-                </div>
-              )}
-              <div className={cn({ "pointer-events-none": !isMounted })}>
-                {/* THIS IS THE PLACE WHERE THE PAYMENT ELEMENT IS MOUNTED */}
-                <div
-                  className={cn({ hidden: !isMounted })}
-                  id={PAYMENT_ELEMENT_ID}
-                />
+              <RadioGroup
+                value={PaymentProvider}
+                onValueChange={(value) =>
+                  setPaymentProvider(value as PaymentProvidersType)
+                }
+                className="gap-4"
+              >
+                <label className="flex cursor-pointer items-start gap-3 rounded-md border p-4">
+                  <RadioGroupItem value="stripe" className="mt-1" />
 
-                {user && (
-                  <CheckboxField
-                    className="mt-6"
-                    name="saveForFutureUse"
-                    disabled={!isMounted || isProcessing}
-                    label={t("payment.save-method")}
-                  />
-                )}
-              </div>
+                  <div className="flex-1">
+                    <p className="font-medium">
+                      Tarjeta de crédito o débito, oxxo o transferencia bancaria
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Paga con tarjeta bancaria, oxxo o transferencia bancaria.
+                    </p>
+
+                    <div
+                      className={cn("mt-4", {
+                        hidden: PaymentProvider !== "stripe",
+                      })}
+                    >
+                      {!isMounted && (
+                        <div className="flex w-full justify-center py-16">
+                          <Spinner />
+                        </div>
+                      )}
+
+                      <div
+                        className={cn({ "pointer-events-none": !isMounted })}
+                      >
+                        <div
+                          className={cn({
+                            hidden: !isMounted,
+                          })}
+                          id={PAYMENT_ELEMENT_ID}
+                        />
+
+                        {user && (
+                          <CheckboxField
+                            className="mt-6"
+                            name="saveForFutureUse"
+                            disabled={!isMounted || isProcessing}
+                            label={t("payment.save-method")}
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-3">
+                        <Button
+                          type="submit"
+                          disabled={
+                            isCountryChanging || !canProceed || isProcessing
+                          }
+                          className="!mt-8 flex w-full items-center gap-1.5"
+                          loading={isLoading}
+                        >
+                          <span className="flex items-center gap-2">
+                            <LockIcon size={16} />
+                            {t("payment.placeOrder")}
+                          </span>
+                        </Button>
+
+                        {errors.map((code, index) => (
+                          <p
+                            key={`${code}-${index}`}
+                            className="text-sm font-medium text-destructive"
+                          >
+                            {t(`errors.${code}`)}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex cursor-pointer items-start gap-3 rounded-md border p-4">
+                  <RadioGroupItem value="paypal" className="mt-1" />
+
+                  <div className="flex-1">
+                    <p className="font-medium">PayPal</p>
+                    <p className="text-sm text-muted-foreground">
+                      Paga con tu cuenta PayPal.
+                    </p>
+
+                    <div
+                      className={cn("mt-4 w-full", {
+                        hidden: PaymentProvider !== "paypal",
+                      })}
+                    >
+                      <PayPalPayment
+                        checkout={checkout}
+                        onUpdateBillingAddress={form.handleSubmit(
+                          async ({
+                            sameAsShippingAddress,
+                            saveAddressForFutureUse,
+                            billingAddress,
+                          }) => {
+                            delete billingAddress?.id;
+
+                            const result = await updateBillingAddress({
+                              checkout,
+                              input: {
+                                sameAsShippingAddress,
+                                saveAddressForFutureUse,
+                                billingAddress,
+                              },
+                              revalidateCheckout: false,
+                            });
+
+                            if (!result.ok) {
+                              result.errors.forEach(({ field, code }) => {
+                                if (isGlobalError(field)) {
+                                  toast({
+                                    variant: "destructive",
+                                    description: t(`errors.${code}`),
+                                  });
+                                } else {
+                                  form.setError(
+                                    `billingAddress.${field}` as BillingAddressPath,
+                                    {
+                                      message: t(`errors.${code}`),
+                                    },
+                                  );
+                                }
+                              });
+
+                              throw new Error(
+                                "Could not update billing address",
+                              );
+                            }
+                          },
+                        )}
+                      />
+                    </div>
+                  </div>
+                </label>
+              </RadioGroup>
             </TabsContent>
           </Tabs>
 
@@ -670,28 +805,6 @@ export const Payment = ({
                 )}
               </>
             )}
-          </div>
-          <div className="flex flex-col gap-3">
-            <Button
-              type="submit"
-              disabled={isCountryChanging || !canProceed || isProcessing}
-              className="!mt-8 flex w-full items-center gap-1.5"
-              loading={isLoading}
-            >
-              <span className="flex items-center gap-2">
-                <LockIcon size={16} />
-                {t("payment.placeOrder")}
-              </span>
-            </Button>
-
-            {errors.map((code, index) => (
-              <p
-                key={`${code}-${index}`}
-                className="text-sm font-medium text-destructive"
-              >
-                {t(`errors.${code}`)}
-              </p>
-            ))}
           </div>
         </div>
       </form>

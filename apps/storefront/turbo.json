@@ -32,7 +32,8 @@
         "SENTRY_DSN",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_DEBUG"
+        "SENTRY_DEBUG",
+        "PAYPAL_CLIENT_SECRET"
       ],
       "passThroughEnv": [
         "AUTH_SECRET",
