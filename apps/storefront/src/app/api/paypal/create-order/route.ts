@@ -1,5 +1,3 @@
-// src/app/api/paypal/create-order/route.ts
-
 import { NextResponse } from "next/server";
 
 type CreateOrderBody = {
@@ -7,31 +5,43 @@ type CreateOrderBody = {
   checkoutId: string;
 };
 
-type PayPalCreateOrderResponse = {
+type CreateOrderRouteResponse = {
+  error?: string;
+  errorCode?: string;
+  paypalOrderId: string;
+};
+
+type PayPalErrorResponse = {
   details?: Array<{
-    description: string;
-    issue: string;
+    description?: string;
+    issue?: string;
   }>;
-  id: string;
+  error?: string;
+  error_description?: string;
+  message?: string;
+  name?: string;
+};
+
+type PayPalCreateOrderResponse = PayPalErrorResponse & {
+  id?: string;
   links?: Array<{
     href: string;
     method: string;
     rel: string;
   }>;
-  message?: string;
   purchase_units?: Array<{
     custom_id?: string;
   }>;
-  status: "CREATED" | "SAVED" | "APPROVED" | "VOIDED" | "COMPLETED";
+  status?: "CREATED" | "SAVED" | "APPROVED" | "VOIDED" | "COMPLETED";
 };
 
-type PayPalAccessTokenResponse = {
-  access_token: string;
-  app_id: string;
-  expires_in: number;
-  nonce: string;
-  scope: string;
-  token_type: "Bearer";
+type PayPalAccessTokenResponse = PayPalErrorResponse & {
+  access_token?: string;
+  app_id?: string;
+  expires_in?: number;
+  nonce?: string;
+  scope?: string;
+  token_type?: "Bearer";
 };
 
 const PAYPAL_API =
@@ -39,9 +49,30 @@ const PAYPAL_API =
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 
+function getPayPalErrorCode(data: PayPalErrorResponse) {
+  return data.details?.[0]?.issue ?? data.name ?? data.error;
+}
+
+function getPayPalErrorMessage(data: PayPalErrorResponse) {
+  return (
+    data.details?.[0]?.description ??
+    data.message ??
+    data.error_description ??
+    data.error ??
+    "PayPal request failed"
+  );
+}
+
 async function getPayPalAccessToken() {
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Missing PayPal credentials");
+  }
+
   const auth = Buffer.from(
-    `${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`,
+    `${clientId.trim()}:${clientSecret.trim()}`,
   ).toString("base64");
 
   const response = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
@@ -50,7 +81,9 @@ async function getPayPalAccessToken() {
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: "grant_type=client_credentials",
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+    }),
     cache: "no-store",
   });
 
@@ -58,7 +91,11 @@ async function getPayPalAccessToken() {
 
   if (!response.ok) {
     console.error("PayPal auth error:", data);
-    throw new Error("Could not authenticate with PayPal");
+    throw new Error(getPayPalErrorMessage(data));
+  }
+
+  if (!data.access_token) {
+    throw new Error("PayPal access token not found");
   }
 
   return data.access_token;
@@ -66,12 +103,13 @@ async function getPayPalAccessToken() {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as CreateOrderBody;
+    const body = (await request.json()) as Partial<CreateOrderBody>;
 
     if (!body.checkoutId) {
-      return NextResponse.json(
+      return NextResponse.json<CreateOrderRouteResponse>(
         {
           paypalOrderId: "",
+          errorCode: "MISSING_CHECKOUT_ID",
           error: "Missing checkoutId",
         },
         { status: 400 },
@@ -79,16 +117,15 @@ export async function POST(request: Request) {
     }
 
     if (!body.amount) {
-      return NextResponse.json(
+      return NextResponse.json<CreateOrderRouteResponse>(
         {
           paypalOrderId: "",
+          errorCode: "MISSING_AMOUNT",
           error: "Missing amount",
         },
         { status: 400 },
       );
     }
-
-    const amount = body.amount;
 
     const accessToken = await getPayPalAccessToken();
 
@@ -106,7 +143,7 @@ export async function POST(request: Request) {
             custom_id: body.checkoutId,
             amount: {
               currency_code: "MXN",
-              value: amount,
+              value: body.amount,
             },
           },
         ],
@@ -119,25 +156,38 @@ export async function POST(request: Request) {
     if (!response.ok) {
       console.error("PayPal create order error:", paypalOrder);
 
-      return NextResponse.json(
+      return NextResponse.json<CreateOrderRouteResponse>(
         {
           paypalOrderId: "",
-          error: paypalOrder.message ?? "Failed to create PayPal order",
+          errorCode: getPayPalErrorCode(paypalOrder),
+          error: getPayPalErrorMessage(paypalOrder),
+        },
+        { status: response.status },
+      );
+    }
+
+    if (!paypalOrder.id) {
+      return NextResponse.json<CreateOrderRouteResponse>(
+        {
+          paypalOrderId: "",
+          errorCode: "PAYPAL_ORDER_ID_NOT_FOUND",
+          error: "PayPal order ID not found",
         },
         { status: 400 },
       );
     }
 
-    return NextResponse.json({
+    return NextResponse.json<CreateOrderRouteResponse>({
       paypalOrderId: paypalOrder.id,
     });
   } catch (error) {
     console.error("PayPal create-order error:", error);
 
-    return NextResponse.json(
+    return NextResponse.json<CreateOrderRouteResponse>(
       {
         paypalOrderId: "",
-        error: "Internal Server Error",
+        errorCode: "INTERNAL_SERVER_ERROR",
+        error: error instanceof Error ? error.message : "Internal Server Error",
       },
       { status: 500 },
     );

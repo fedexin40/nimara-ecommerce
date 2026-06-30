@@ -8,6 +8,7 @@ type CaptureBody = {
 type CaptureOrderRouteResponse = {
   captureId: string;
   error?: string;
+  errorCode?: string;
   status: "COMPLETED" | "PENDING" | "FAILED";
 };
 
@@ -49,12 +50,16 @@ const PAYPAL_API =
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 
+function getPayPalErrorCode(data: PayPalErrorResponse) {
+  return data.details?.[0]?.issue ?? data.name ?? data.error;
+}
+
 function getPayPalErrorMessage(data: PayPalErrorResponse) {
   return (
+    data.details?.[0]?.description ??
     data.message ??
     data.error_description ??
     data.error ??
-    data.details?.[0]?.description ??
     "PayPal request failed"
   );
 }
@@ -107,6 +112,7 @@ export async function POST(request: Request) {
         {
           captureId: "",
           status: "FAILED",
+          errorCode: "MISSING_REQUIRED_FIELDS",
           error: "Missing checkoutId or paypalOrderId",
         },
         { status: 400 },
@@ -136,9 +142,10 @@ export async function POST(request: Request) {
         {
           captureId: "",
           status: "FAILED",
+          errorCode: getPayPalErrorCode(paypalOrder),
           error: getPayPalErrorMessage(paypalOrder),
         },
-        { status: 400 },
+        { status: response.status },
       );
     }
 
@@ -149,6 +156,7 @@ export async function POST(request: Request) {
         {
           captureId: "",
           status: "FAILED",
+          errorCode: "CAPTURE_ID_NOT_FOUND",
           error: "PayPal capture ID not found",
         },
         { status: 400 },
@@ -159,10 +167,13 @@ export async function POST(request: Request) {
       return NextResponse.json<CaptureOrderRouteResponse>(
         {
           captureId: capture.id,
-          status: "PENDING",
-          error: `Unexpected PayPal capture status: ${capture.status ?? "UNKNOWN"}`,
+          status: capture.status === "PENDING" ? "PENDING" : "FAILED",
+          errorCode: `PAYPAL_CAPTURE_${capture.status ?? "UNKNOWN"}`,
+          error: `Unexpected PayPal capture status: ${
+            capture.status ?? "UNKNOWN"
+          }`,
         },
-        { status: 202 },
+        { status: capture.status === "PENDING" ? 202 : 400 },
       );
     }
 
@@ -177,6 +188,7 @@ export async function POST(request: Request) {
       {
         captureId: "",
         status: "FAILED",
+        errorCode: "INTERNAL_SERVER_ERROR",
         error: error instanceof Error ? error.message : "Internal Server Error",
       },
       { status: 500 },
