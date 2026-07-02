@@ -52,7 +52,8 @@ type ExpressCheckoutProps = {
 type SkydropxShippingMethod = {
   days: number;
   id: string;
-  provider_name: string;
+  provider_display_name: string;
+  provider_service_name: string;
   total: number;
 };
 
@@ -275,6 +276,8 @@ export function ExpressCheckout({
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                  amount: amount,
+                  checkoutId: checkoutId,
                   address: {
                     country_code: event.address.country?.toLowerCase(),
                     postal_code: event.address.postal_code,
@@ -297,7 +300,10 @@ export function ExpressCheckout({
 
             const shippingRates = shippingMethods.map((method) => ({
               id: method.id,
-              displayName: method.provider_name,
+              displayName:
+                method.provider_display_name +
+                " " +
+                method.provider_service_name,
               amount: Math.round(method.total * 100),
               deliveryEstimate: {
                 minimum: {
