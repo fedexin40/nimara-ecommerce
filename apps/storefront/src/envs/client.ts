@@ -41,7 +41,7 @@ const schema = z.object({
   ),
   NEXT_PUBLIC_DEFAULT_PAGE_TITLE: z.preprocess(
     emptyStringToUndefined,
-    z.string().default("Nimara Storefront"),
+    z.string().default("Joyeria Proyecto 705"),
   ),
   NEXT_PUBLIC_SALEOR_API_URL: z.preprocess(
     emptyStringToUndefined,
