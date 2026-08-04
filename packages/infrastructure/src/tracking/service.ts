@@ -1,4 +1,5 @@
 import { gtmTrackingProvider } from "#root/tracking/google/provider";
+import { metaTrackingProvider } from "#root/tracking/meta/provider";
 import { createTrackingUseCase } from "#root/use-cases/tracking/create-tracking-use-case";
 import type { TrackAddPaymentInfoInput } from "#root/use-cases/tracking/types/add-payment-info";
 import type { TrackAddShippingInfoInput } from "#root/use-cases/tracking/types/add-shipping-info";
@@ -29,13 +30,14 @@ import type { TrackViewListItemInput } from "#root/use-cases/tracking/types/view
  */
 export const getTrackingService = () => {
   const gtm = gtmTrackingProvider();
+  const meta = metaTrackingProvider();
 
   return {
     /**
      * Fired on any add to cart action.
      */
     trackAddToCart: createTrackingUseCase<TrackAddToCartInput>({
-      providers: [gtm.addToCart],
+      providers: [gtm.addToCart, meta.addToCart],
     }),
     /**
      * Fired when certain view list is shown: PLP, categories, carousels etc.
@@ -47,7 +49,7 @@ export const getTrackingService = () => {
      * Fired on product detail page view.
      */
     trackViewItem: createTrackingUseCase<TrackViewItemInput>({
-      providers: [gtm.viewItem],
+      providers: [gtm.viewItem, meta.viewItem],
     }),
     /**
      * Fired when shopping cart is viewed.
@@ -65,7 +67,7 @@ export const getTrackingService = () => {
      * Fired when a purchase is completed.
      */
     trackPurchase: createTrackingUseCase<TrackPurchaseInput>({
-      providers: [gtm.purchase],
+      providers: [gtm.purchase, meta.purchase],
     }),
     /**
      * Fired when a product is selected from a list (PLP, carousel, search results).
@@ -77,7 +79,7 @@ export const getTrackingService = () => {
      * Fired when a search query produces results.
      */
     trackSearch: createTrackingUseCase<TrackSearchInput>({
-      providers: [gtm.search],
+      providers: [gtm.search, meta.search],
     }),
     /**
      * Fired on successful user login.
@@ -89,13 +91,13 @@ export const getTrackingService = () => {
      * Fired on successful account creation.
      */
     trackSignUp: createTrackingUseCase<TrackSignUpInput>({
-      providers: [gtm.signUp],
+      providers: [gtm.signUp, meta.signUp],
     }),
     /**
      * Fired when the user begins checkout.
      */
     trackBeginCheckout: createTrackingUseCase<TrackBeginCheckoutInput>({
-      providers: [gtm.beginCheckout],
+      providers: [gtm.beginCheckout, meta.beginCheckout],
     }),
     /**
      * Fired after shipping info is submitted in checkout.
@@ -107,7 +109,7 @@ export const getTrackingService = () => {
      * Fired after payment info is submitted in checkout.
      */
     trackAddPaymentInfo: createTrackingUseCase<TrackAddPaymentInfoInput>({
-      providers: [gtm.addPaymentInfo],
+      providers: [gtm.addPaymentInfo, meta.addPaymentInfo],
     }),
     /**
      * Pushes Google Consent Mode v2 `update` signal so GTM tags respect
