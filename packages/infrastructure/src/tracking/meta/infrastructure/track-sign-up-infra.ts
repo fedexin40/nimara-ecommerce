@@ -1,6 +1,7 @@
 import type { TrackSignUpProvider } from "#root/use-cases/tracking/types/sign-up";
 
-import * as pixel from "../fpixel";
+import { createMetaEventId } from "../create-event-id";
+import { trackMetaEvent } from "../track-event";
 
 /**
  * Reference:
@@ -8,10 +9,16 @@ import * as pixel from "../fpixel";
  */
 export const metaTrackSignUpInfra = (): TrackSignUpProvider => ({
   async track({ method }) {
-    pixel.event("CompleteRegistration", {
-      ...(method && {
-        registration_method: method,
-      }),
+    const eventId = createMetaEventId("CompleteRegistration");
+
+    await trackMetaEvent({
+      eventName: "CompleteRegistration",
+      eventId,
+      parameters: {
+        ...(method && {
+          registration_method: method,
+        }),
+      },
     });
   },
 });

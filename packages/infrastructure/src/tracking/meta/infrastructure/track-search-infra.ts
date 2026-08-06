@@ -1,6 +1,7 @@
 import type { TrackSearchProvider } from "#root/use-cases/tracking/types/search";
 
-import * as pixel from "../fpixel";
+import { createMetaEventId } from "../create-event-id";
+import { trackMetaEvent } from "../track-event";
 
 /**
  * Reference:
@@ -8,11 +9,17 @@ import * as pixel from "../fpixel";
  */
 export const metaTrackSearchInfra = (): TrackSearchProvider => ({
   async track({ searchTerm, resultsCount }) {
-    pixel.event("Search", {
-      search_string: searchTerm,
-      ...(resultsCount !== undefined && {
-        number_of_results: resultsCount,
-      }),
+    const eventId = createMetaEventId("Search");
+
+    await trackMetaEvent({
+      eventName: "Search",
+      eventId,
+      parameters: {
+        search_string: searchTerm,
+        ...(resultsCount !== undefined && {
+          number_of_results: resultsCount,
+        }),
+      },
     });
   },
 });

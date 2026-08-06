@@ -15,6 +15,9 @@
       ],
       "env": [
         "ANALYZE",
+        "META_PIXEL_ID",
+        "META_CAPI_ACCESS_TOKEN",
+        "META_CAPI_TEST_EVENT_CODE",
         "NEXT_PUBLIC_SALEOR_API_URL",
         "NEXT_PUBLIC_DEFAULT_CHANNEL",
         "NEXT_PUBLIC_STOREFRONT_URL",

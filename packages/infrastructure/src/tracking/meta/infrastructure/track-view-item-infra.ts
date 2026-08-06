@@ -1,7 +1,8 @@
 import type { TrackViewItemProvider } from "#root/use-cases/tracking/types/view-item";
 
-import * as pixel from "../fpixel";
+import { createMetaEventId } from "../create-event-id";
 import { createMetaCommerceEvent } from "../helpers/create-commerce-event";
+import { trackMetaEvent } from "../track-event";
 
 /**
  * Reference:
@@ -9,9 +10,12 @@ import { createMetaCommerceEvent } from "../helpers/create-commerce-event";
  */
 export const metaTrackViewItemInfra = (): TrackViewItemProvider => ({
   async track({ product, price }) {
-    pixel.event(
-      "ViewContent",
-      createMetaCommerceEvent({
+    const eventId = createMetaEventId("ViewContent");
+
+    await trackMetaEvent({
+      eventName: "ViewContent",
+      eventId,
+      parameters: createMetaCommerceEvent({
         currency: price.currency,
         value: price.amount,
 
@@ -25,6 +29,6 @@ export const metaTrackViewItemInfra = (): TrackViewItemProvider => ({
           },
         ],
       }),
-    );
+    });
   },
 });

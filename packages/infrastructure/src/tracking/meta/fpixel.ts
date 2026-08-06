@@ -1,37 +1,112 @@
+import type {
+  MetaEventParameters,
+  MetaStandardEventName,
+} from "./types";
+
 export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 
-type MetaEventParameters = Record<string, unknown>;
+const isDevelopment = process.env.NODE_ENV !== "production";
+
+const isBrowser = (): boolean =>
+  typeof window !== "undefined";
 
 const isPixelAvailable = (): boolean =>
-  typeof window !== "undefined" &&
-  typeof window.fbq === "function";
+  isBrowser() && typeof window.fbq === "function";
 
-export const pageview = (): void => {
-  if (!isPixelAvailable()) {
+const logUnavailablePixel = (
+  eventName: string,
+  eventId?: string,
+): void => {
+  if (!isDevelopment) {
     return;
   }
 
-  window.fbq?.("track", "PageView");
+  if (!isBrowser()) {
+    console.warn("[Meta Pixel] Event executed outside the browser", {
+      eventName,
+      eventId,
+    });
+
+    return;
+  }
+
+  console.warn("[Meta Pixel] fbq is not initialized", {
+    eventName,
+    eventId,
+  });
+};
+
+const track = (
+  method: "track" | "trackCustom",
+  eventName: string,
+  parameters: MetaEventParameters = {},
+  eventId?: string,
+): void => {
+  if (!isPixelAvailable()) {
+    logUnavailablePixel(eventName, eventId);
+    return;
+  }
+
+  if (isDevelopment) {
+    console.debug("[Meta Pixel] Sending browser event", {
+      method,
+      eventName,
+      eventId,
+      parameters,
+    });
+  }
+
+  if (eventId) {
+    window.fbq?.(
+      method,
+      eventName,
+      parameters,
+      {
+        eventID: eventId,
+      },
+    );
+
+    return;
+  }
+
+  window.fbq?.(
+    method,
+    eventName,
+    parameters,
+  );
+};
+
+export const pageview = (eventId?: string): void => {
+  track(
+    "track",
+    "PageView",
+    {},
+    eventId,
+  );
 };
 
 export const event = (
-  eventName: string,
+  eventName: MetaStandardEventName,
   parameters: MetaEventParameters = {},
+  eventId?: string,
 ): void => {
-  if (!isPixelAvailable()) {
-    return;
-  }
-
-  window.fbq?.("track", eventName, parameters);
+  track(
+    "track",
+    eventName,
+    parameters,
+    eventId,
+  );
 };
 
 export const customEvent = (
   eventName: string,
   parameters: MetaEventParameters = {},
+  eventId?: string,
 ): void => {
-  if (!isPixelAvailable()) {
-    return;
-  }
-
-  window.fbq?.("trackCustom", eventName, parameters);
+  track(
+    "trackCustom",
+    eventName,
+    parameters,
+    eventId,
+  );
 };

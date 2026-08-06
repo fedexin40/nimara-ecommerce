@@ -1,7 +1,8 @@
 import type { TrackPurchaseProvider } from "#root/use-cases/tracking/types/purchase";
 
-import * as pixel from "../fpixel";
+import { createMetaEventId } from "../create-event-id";
 import { createMetaCommerceEvent } from "../helpers/create-commerce-event";
+import { trackMetaEvent } from "../track-event";
 
 /**
  * Reference:
@@ -9,9 +10,12 @@ import { createMetaCommerceEvent } from "../helpers/create-commerce-event";
  */
 export const metaTrackPurchaseInfra = (): TrackPurchaseProvider => ({
   async track({ checkout, orderId }) {
-    pixel.event(
-      "Purchase",
-      {
+    const eventId = createMetaEventId("Purchase", orderId);
+
+    await trackMetaEvent({
+      eventName: "Purchase",
+      eventId,
+      parameters: {
         ...createMetaCommerceEvent({
           currency: checkout.totalPrice.gross.currency,
           value: checkout.totalPrice.gross.amount,
@@ -31,6 +35,6 @@ export const metaTrackPurchaseInfra = (): TrackPurchaseProvider => ({
 
         tax: checkout.totalPrice.tax.amount,
       },
-    );
+    });
   },
 });
