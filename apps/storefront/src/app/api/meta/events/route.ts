@@ -20,6 +20,9 @@ const META_PIXEL_ID = process.env.META_PIXEL_ID;
 const META_CAPI_ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN;
 const META_CAPI_TEST_EVENT_CODE = process.env.META_CAPI_TEST_EVENT_CODE;
 
+const META_EXTERNAL_ID_COOKIE = "_meta_external_id";
+const META_EXTERNAL_ID_MAX_AGE = 60 * 60 * 24 * 365;
+
 const ALLOWED_EVENT_NAMES = new Set<MetaStandardEventName>([
   "ViewContent",
   "AddToCart",
@@ -107,6 +110,44 @@ const getClientIp = (request: NextRequest): string | undefined => {
   return request.headers.get("x-real-ip") ?? undefined;
 };
 
+const getOrCreateMetaExternalId = (
+  request: NextRequest,
+): {
+  externalId: string;
+  isNew: boolean;
+} => {
+  const existingExternalId = request.cookies.get(
+    META_EXTERNAL_ID_COOKIE,
+  )?.value;
+
+  if (existingExternalId) {
+    return {
+      externalId: existingExternalId,
+      isNew: false,
+    };
+  }
+
+  return {
+    externalId: crypto.randomUUID(),
+    isNew: true,
+  };
+};
+
+const setMetaExternalIdCookie = (
+  response: NextResponse,
+  externalId: string,
+): void => {
+  response.cookies.set({
+    name: META_EXTERNAL_ID_COOKIE,
+    value: externalId,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: META_EXTERNAL_ID_MAX_AGE,
+  });
+};
+
 const getEventSourceUrl = (
   request: NextRequest,
   suppliedUrl?: string,
@@ -177,6 +218,7 @@ const parseRequestBody = async (
 const createUserData = (
   request: NextRequest,
   customer: MetaTrackingEvent["customer"],
+  externalId: string,
 ): InstanceType<typeof UserData> => {
   const userData = new UserData();
 
@@ -205,6 +247,12 @@ const createUserData = (
     userData.setFbc(fbc);
   }
 
+  /*
+   * Identificador first-party generado por nuestra aplicación.
+   * Se mantiene estable mediante una cookie HttpOnly.
+   */
+  userData.setExternalId(externalId);
+
   if (!customer) {
     return userData;
   }
@@ -217,7 +265,6 @@ const createUserData = (
   const phone = normalizePhone(customer.phone);
   const firstName = normalizeString(customer.firstName);
   const lastName = normalizeString(customer.lastName);
-  const externalId = normalizeString(customer.externalId);
   const city = normalizeString(customer.city);
   const state = normalizeString(customer.state);
   const postalCode = normalizeString(customer.postalCode);
@@ -237,10 +284,6 @@ const createUserData = (
 
   if (lastName) {
     userData.setLastName(lastName);
-  }
-
-  if (externalId) {
-    userData.setExternalId(externalId);
   }
 
   if (city) {
@@ -419,7 +462,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return jsonError("Unable to determine event_source_url", 422);
   }
 
-  const userData = createUserData(request, event.customer);
+  const { externalId, isNew: isNewExternalId } =
+    getOrCreateMetaExternalId(request);
+
+  const userData = createUserData(request, event.customer, externalId);
 
   const customData = createCustomData(event.parameters);
 
@@ -444,7 +490,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const response = await eventRequest.execute();
 
-    return NextResponse.json(
+    const nextResponse = NextResponse.json(
       {
         success: true,
         eventId: event.eventId,
@@ -460,6 +506,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         },
       },
     );
+
+    if (isNewExternalId) {
+      setMetaExternalIdCookie(nextResponse, externalId);
+    }
+
+    return nextResponse;
   } catch (error) {
     /*
      * No expongas el token ni la respuesta completa de Meta
