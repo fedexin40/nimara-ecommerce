@@ -1,6 +1,7 @@
 import { CartCountProvider } from "@nimara/features/cart/shared/providers/cart-count-provider";
 
 import { CACHE_TTL } from "@/config";
+import { ContactFloating } from "@/features/chat/contact";
 import { Footer } from "@/features/footer";
 import { Header } from "@/features/header";
 import { getCurrentRegion } from "@/foundation/regions";
@@ -31,6 +32,7 @@ export default async function Layout({ children }: LayoutProps<"/[locale]">) {
     <CartCountProvider>
       <div className="sticky top-0 isolate z-50 bg-background py-4 transition-colors md:pb-0">
         <Header />
+        <ContactFloating />
         <Navigation menu={resultMenu.data?.menu} />
       </div>
       <main className="container flex h-screen flex-1 items-stretch">
