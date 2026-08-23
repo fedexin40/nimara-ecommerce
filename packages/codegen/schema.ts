@@ -102,25 +102,6 @@ export type AccountChangeEmailRequested = Event & {
   version: Maybe<Scalars['String']['output']>;
 };
 
-/**
- * AccountConfirmMode set the account merging mode for anonymous objects.
- *
- *     This dictates the behavior of the `confirmAccount()` mutation for
- *     password-based authentication when attempting to merge orders & giftcard
- *     that aren't associated to a user account.
- *
- *     Modes:
- *
- *     - MERGE_DISABLED disables merging only when the authentication method
- *       is password (i.e., when not using OIDC)
- *     - REQUIRE_PASSWORD enables account merging who accounts that use password
- *       authentication but it requires the user to enter their password
- *
- */
-export type AccountConfirmModeEnum =
-  | 'MERGE_DISABLED'
-  | 'REQUIRE_PASSWORD';
-
 /** Event sent when account confirmation requested. This event is always sent. enableAccountConfirmationByEmail flag set to True is not required. */
 export type AccountConfirmationRequested = Event & {
   /** The channel data. */
@@ -252,12 +233,6 @@ export type AccountEmailChanged = Event & {
 export type AccountError = {
   /** A type of address that causes the error. */
   addressType: Maybe<AddressTypeEnum>;
-  /**
-   * List of attributes IDs which causes the error.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes: Maybe<Array<Scalars['ID']['output']>>;
   /** The error code. */
   code: AccountErrorCode;
   /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
@@ -1068,8 +1043,6 @@ export type AppError = {
 };
 
 export type AppErrorCode =
-  | 'DUPLICATED_EXTENSION_IDENTIFIER'
-  | 'DUPLICATED_WEBHOOK_IDENTIFIER'
   | 'FORBIDDEN'
   | 'GRAPHQL_ERROR'
   | 'INVALID'
@@ -1094,12 +1067,6 @@ export type AppExtension = Node & {
   app: App;
   /** The ID of the app extension. */
   id: Scalars['ID']['output'];
-  /**
-   * Extension identifier, unique per app. Null when the app does not declare one.
-   *
-   * Added in Saleor 3.23.
-   */
-  identifier: Maybe<Scalars['String']['output']>;
   /** Label of the extension to show in the dashboard. */
   label: Scalars['String']['output'];
   /**
@@ -1261,12 +1228,6 @@ export type AppManifestBrandLogoDefaultArgs = {
 };
 
 export type AppManifestExtension = {
-  /**
-   * Extension identifier, unique per app. Null when the app does not declare one.
-   *
-   * Added in Saleor 3.23.
-   */
-  identifier: Maybe<Scalars['String']['output']>;
   /** Label of the extension to show in the dashboard. */
   label: Scalars['String']['output'];
   /**
@@ -2296,7 +2257,7 @@ export type AttributeBulkCreateResult = {
 /**
  * Deletes attributes.
  *
- * Requires one of the following permissions, depending on the type of each attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PAGE_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_DELETED (async): An attribute was deleted.
@@ -2518,7 +2479,7 @@ export type AttributeCreated = Event & {
 /**
  * Deletes an attribute.
  *
- * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_DELETED (async): An attribute was deleted.
@@ -2658,7 +2619,7 @@ export type AttributeInputTypeEnumFilterInput = {
 /**
  * Reorder the values of an attribute.
  *
- * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_VALUE_UPDATED (async): An attribute value was updated.
@@ -2753,7 +2714,6 @@ export type AttributeTranslation = Node & {
 };
 
 export type AttributeTypeEnum =
-  | 'CUSTOMER_TYPE'
   | 'PAGE_TYPE'
   | 'PRODUCT_TYPE';
 
@@ -2767,7 +2727,7 @@ export type AttributeTypeEnumFilterInput = {
 /**
  * Updates attribute.
  *
- * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_UPDATED (async): An attribute was updated.
@@ -2893,7 +2853,7 @@ export type AttributeValueTranslationArgs = {
 /**
  * Deletes values of attributes.
  *
- * Requires one of the following permissions, depending on the type of each value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PAGE_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_VALUE_DELETED (async): An attribute value was deleted.
@@ -2965,7 +2925,7 @@ export type AttributeValueCountableEdge = {
 /**
  * Creates a value for an attribute.
  *
- * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCTS.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_VALUE_CREATED (async): An attribute value was created.
@@ -3024,7 +2984,7 @@ export type AttributeValueCreated = Event & {
 /**
  * Deletes a value of an attribute.
  *
- * Requires one of the following permissions, depending on the type of the value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_VALUE_DELETED (async): An attribute value was deleted.
@@ -3204,7 +3164,7 @@ export type AttributeValueTranslationInput = {
 /**
  * Updates value of an attribute.
  *
- * Requires one of the following permissions, depending on the type of the value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+ * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
  *
  * Triggers the following webhook events:
  * - ATTRIBUTE_VALUE_UPDATED (async): An attribute value was updated.
@@ -3383,11 +3343,6 @@ export type CalculateTaxes = Event & {
   version: Maybe<Scalars['String']['output']>;
 };
 
-/**
- * Card data used to check a payment balance.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
 export type CardInput = {
   /** Payment method nonce, a token returned by the appropriate provider's SDK. */
   code: Scalars['String']['input'];
@@ -4285,7 +4240,6 @@ export type Checkout = Node & ObjectWithMetadata & {
    *
    * Triggers the following webhook events:
    * - PAYMENT_LIST_GATEWAYS (sync): Fetch payment gateways available for checkout.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   availablePaymentGateways: Array<PaymentGateway>;
   /**
@@ -4871,7 +4825,6 @@ export type CheckoutErrorCode =
   | 'NOT_FOUND'
   | 'NO_LINES'
   | 'PAYMENT_ERROR'
-  | 'PRICE_OVERRIDE_REASON_WITHOUT_OVERRIDE'
   | 'PRODUCT_NOT_PUBLISHED'
   | 'PRODUCT_UNAVAILABLE_FOR_PURCHASE'
   | 'QUANTITY_GREATER_THAN_LIMIT'
@@ -4987,14 +4940,6 @@ export type CheckoutLine = Node & ObjectWithMetadata & {
   /** Public metadata. Use `keys` to control which fields you want to include. The default is to include everything. */
   metafields: Maybe<Scalars['Metadata']['output']>;
   /**
-   * Reason explaining why a custom price was set on the line, provided by the app that set the price override.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CHECKOUTS, HANDLE_CHECKOUTS.
-   */
-  priceOverrideReason: Maybe<Scalars['String']['output']>;
-  /**
    * The sum of the checkout line price prior to promotion.
    *
    * Added in Saleor 3.21.
@@ -5108,12 +5053,6 @@ export type CheckoutLineInput = {
   metadata?: InputMaybe<Array<MetadataInput>>;
   /** Custom price of the item. Can be set only by apps with `HANDLE_CHECKOUTS` permission. When the line with the same variant will be provided multiple times, the last price will be used. */
   price?: InputMaybe<Scalars['PositiveDecimal']['input']>;
-  /**
-   * Reason explaining why a custom `price` was set on the line, for debugging and auditing. Can be set only by apps with `HANDLE_CHECKOUTS` permission and only when the line has a `price` override. Setting a new `price` without a reason clears the previous reason. Blank values are stored as no reason. Limited to 255 characters; longer values are truncated.
-   *
-   * Added in Saleor 3.23.
-   */
-  priceOverrideReason?: InputMaybe<Scalars['String']['input']>;
   /** The number of items purchased. */
   quantity: Scalars['Int']['input'];
   /** ID of the product variant. */
@@ -5152,12 +5091,6 @@ export type CheckoutLineUpdateInput = {
   metadata?: InputMaybe<Array<MetadataInput>>;
   /** Custom price of the item. Can be set only by apps with `HANDLE_CHECKOUTS` permission. When the line with the same variant will be provided multiple times, the last price will be used. */
   price?: InputMaybe<Scalars['PositiveDecimal']['input']>;
-  /**
-   * Reason explaining why a custom `price` was set on the line, for debugging and auditing. Can be set only by apps with `HANDLE_CHECKOUTS` permission and only when the line has a `price` override. Setting a new `price` without a reason clears the previous reason. Blank values are stored as no reason. Limited to 255 characters; longer values are truncated.
-   *
-   * Added in Saleor 3.23.
-   */
-  priceOverrideReason?: InputMaybe<Scalars['String']['input']>;
   /** The number of items purchased. Optional for apps, required for any other users. */
   quantity?: InputMaybe<Scalars['Int']['input']>;
   /**
@@ -6706,12 +6639,6 @@ export type CustomerBulkUpdate = {
 };
 
 export type CustomerBulkUpdateError = {
-  /**
-   * List of attributes IDs which causes the error.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes: Maybe<Array<Scalars['ID']['output']>>;
   /** The error code. */
   code: CustomerBulkUpdateErrorCode;
   /** The error message. */
@@ -6853,18 +6780,6 @@ export type CustomerFilterInput = {
 };
 
 export type CustomerInput = {
-  /**
-   * List of attribute values to assign to the user. The attributes must belong to the customer type the user ends up with.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes?: InputMaybe<Array<AttributeValueInput>>;
-  /**
-   * ID of the customer type to assign to the user. If not provided when creating a customer, the default customer type is assigned.
-   *
-   * Added in Saleor 3.23.
-   */
-  customerType?: InputMaybe<Scalars['ID']['input']>;
   /** Billing address of the customer. */
   defaultBillingAddress?: InputMaybe<AddressInput>;
   /** Shipping address of the customer. */
@@ -6970,409 +6885,6 @@ export type CustomerOrderWhereInput = {
 };
 
 /**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerType = Node & ObjectWithMetadata & {
-  /** Customer attributes assigned to this customer type. Attributes that are not visible in the storefront require one of the following permissions to be included: MANAGE_USERS, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES. */
-  attributes: Maybe<Array<Attribute>>;
-  /**
-   * Customer attributes that can be assigned to the customer type.
-   *
-   * Requires one of the following permissions: MANAGE_USERS, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   */
-  availableAttributes: Maybe<AttributeCountableConnection>;
-  /** The ID of the customer type. */
-  id: Scalars['ID']['output'];
-  /** Whether this is the default customer type. The default customer type is assigned to every newly created user and cannot be deleted. */
-  isDefault: Scalars['Boolean']['output'];
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<MetadataItem>;
-  /**
-   * A single key from public metadata.
-   *
-   * Tip: Use GraphQL aliases to fetch multiple keys.
-   */
-  metafield: Maybe<Scalars['String']['output']>;
-  /** Public metadata. Use `keys` to control which fields you want to include. The default is to include everything. */
-  metafields: Maybe<Scalars['Metadata']['output']>;
-  /** Name of the customer type. */
-  name: Scalars['String']['output'];
-  /** List of private metadata items. Requires staff permissions to access. */
-  privateMetadata: Array<MetadataItem>;
-  /**
-   * A single key from private metadata. Requires staff permissions to access.
-   *
-   * Tip: Use GraphQL aliases to fetch multiple keys.
-   */
-  privateMetafield: Maybe<Scalars['String']['output']>;
-  /** Private metadata. Requires staff permissions to access. Use `keys` to control which fields you want to include. The default is to include everything. */
-  privateMetafields: Maybe<Scalars['Metadata']['output']>;
-  /** Slug of the customer type. */
-  slug: Scalars['String']['output'];
-};
-
-
-/**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeAvailableAttributesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  where?: InputMaybe<AttributeWhereInput>;
-};
-
-
-/**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeMetafieldArgs = {
-  key: Scalars['String']['input'];
-};
-
-
-/**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeMetafieldsArgs = {
-  keys?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-/**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypePrivateMetafieldArgs = {
-  key: Scalars['String']['input'];
-};
-
-
-/**
- * Represents a type of customer. It allows to segment users and defines what attributes are available to users of this type.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypePrivateMetafieldsArgs = {
-  keys?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-/**
- * Assign attributes to a given customer type.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
- */
-export type CustomerTypeAssignAttributes = {
-  /** The updated customer type. */
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeAssignAttributesError>;
-};
-
-export type CustomerTypeAssignAttributesError = {
-  /** List of attributes IDs which causes the error. */
-  attributes: Maybe<Array<Scalars['ID']['output']>>;
-  /** The error code. */
-  code: CustomerTypeAssignAttributesErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeAssignAttributesErrorCode =
-  | 'ATTRIBUTE_ALREADY_ASSIGNED'
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND';
-
-export type CustomerTypeCountableConnection = {
-  edges: Array<CustomerTypeCountableEdge>;
-  /** Pagination data for this connection. */
-  pageInfo: PageInfo;
-  /** A total count of items in the collection. */
-  totalCount: Maybe<Scalars['Int']['output']>;
-};
-
-export type CustomerTypeCountableEdge = {
-  /** A cursor for use in pagination. */
-  cursor: Scalars['String']['output'];
-  /** The item at the end of the edge. */
-  node: CustomerType;
-};
-
-/**
- * Creates a new customer type.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_CREATED (async): A new customer type was created.
- */
-export type CustomerTypeCreate = {
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeCreateError>;
-};
-
-export type CustomerTypeCreateError = {
-  /** The error code. */
-  code: CustomerTypeCreateErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeCreateErrorCode =
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND'
-  | 'REQUIRED'
-  | 'UNIQUE';
-
-export type CustomerTypeCreateInput = {
-  /** Determines if the customer type should become the default one, assigned to every newly created user. Passing `true` clears the flag on the current default customer type - exactly one default customer type always exists. */
-  isDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Name of the customer type. */
-  name?: InputMaybe<Scalars['String']['input']>;
-  /** Slug of the customer type. If not provided, it will be generated from the name. */
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-/**
- * Event sent when new customer type is created.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeCreated = Event & {
-  /** The customer type the event relates to. */
-  customerType: Maybe<CustomerType>;
-  /** Time of the event. */
-  issuedAt: Maybe<Scalars['DateTime']['output']>;
-  /** The user or application that triggered the event. */
-  issuingPrincipal: Maybe<IssuingPrincipal>;
-  /** The application receiving the webhook. */
-  recipient: Maybe<App>;
-  /** Saleor version that triggered the event. */
-  version: Maybe<Scalars['String']['output']>;
-};
-
-/**
- * Deletes a customer type. Users of the deleted customer type are reassigned to the default customer type.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_DELETED (async): A customer type was deleted.
- */
-export type CustomerTypeDelete = {
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeDeleteError>;
-};
-
-export type CustomerTypeDeleteError = {
-  /** The error code. */
-  code: CustomerTypeDeleteErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeDeleteErrorCode =
-  | 'CANNOT_DELETE_DEFAULT'
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND';
-
-/**
- * Event sent when customer type is deleted.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeDeleted = Event & {
-  /** The customer type the event relates to. */
-  customerType: Maybe<CustomerType>;
-  /** Time of the event. */
-  issuedAt: Maybe<Scalars['DateTime']['output']>;
-  /** The user or application that triggered the event. */
-  issuingPrincipal: Maybe<IssuingPrincipal>;
-  /** The application receiving the webhook. */
-  recipient: Maybe<App>;
-  /** Saleor version that triggered the event. */
-  version: Maybe<Scalars['String']['output']>;
-};
-
-/**
- * Reorder the attributes of a customer type.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
- */
-export type CustomerTypeReorderAttributes = {
-  /** Customer type from which attributes are reordered. */
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeReorderAttributesError>;
-};
-
-export type CustomerTypeReorderAttributesError = {
-  /** List of attributes IDs which causes the error. */
-  attributes: Maybe<Array<Scalars['ID']['output']>>;
-  /** The error code. */
-  code: CustomerTypeReorderAttributesErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeReorderAttributesErrorCode =
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND';
-
-export type CustomerTypeSortField =
-  /** Sort customer types by name. */
-  | 'NAME'
-  /** Sort customer types by slug. */
-  | 'SLUG';
-
-export type CustomerTypeSortingInput = {
-  /** Specifies the direction in which to sort customer types. */
-  direction: OrderDirection;
-  /** Sort customer types by the selected field. */
-  field: CustomerTypeSortField;
-};
-
-/**
- * Unassign attributes from a given customer type. Values already assigned to users are kept in the database, but are hidden until the attribute is assigned to the user's customer type again.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
- */
-export type CustomerTypeUnassignAttributes = {
-  /** The updated customer type. */
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeUnassignAttributesError>;
-};
-
-export type CustomerTypeUnassignAttributesError = {
-  /** The error code. */
-  code: CustomerTypeUnassignAttributesErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeUnassignAttributesErrorCode =
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND';
-
-/**
- * Updates a customer type.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
- *
- * Triggers the following webhook events:
- * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
- */
-export type CustomerTypeUpdate = {
-  customerType: Maybe<CustomerType>;
-  errors: Array<CustomerTypeUpdateError>;
-};
-
-export type CustomerTypeUpdateError = {
-  /** The error code. */
-  code: CustomerTypeUpdateErrorCode;
-  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
-  field: Maybe<Scalars['String']['output']>;
-  /** The error message. */
-  message: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeUpdateErrorCode =
-  | 'CANNOT_UNSET_DEFAULT'
-  | 'GRAPHQL_ERROR'
-  | 'INVALID'
-  | 'NOT_FOUND'
-  | 'REQUIRED'
-  | 'UNIQUE';
-
-export type CustomerTypeUpdateInput = {
-  /** Determines if the customer type should become the default one, assigned to every newly created user. Passing `true` clears the flag on the current default customer type - exactly one default customer type always exists. */
-  isDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Name of the customer type. */
-  name?: InputMaybe<Scalars['String']['input']>;
-  /** Slug of the customer type. If not provided, it will be generated from the name. */
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-/**
- * Event sent when customer type is updated.
- *
- * Added in Saleor 3.23.
- */
-export type CustomerTypeUpdated = Event & {
-  /** The customer type the event relates to. */
-  customerType: Maybe<CustomerType>;
-  /** Time of the event. */
-  issuedAt: Maybe<Scalars['DateTime']['output']>;
-  /** The user or application that triggered the event. */
-  issuingPrincipal: Maybe<IssuingPrincipal>;
-  /** The application receiving the webhook. */
-  recipient: Maybe<App>;
-  /** Saleor version that triggered the event. */
-  version: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomerTypeWhereInput = {
-  /** List of conditions that must be met. */
-  AND?: InputMaybe<Array<CustomerTypeWhereInput>>;
-  /** A list of conditions of which at least one must be met. */
-  OR?: InputMaybe<Array<CustomerTypeWhereInput>>;
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Filter by whether the customer type is the default one. */
-  isDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Filter by metadata fields. */
-  metadata?: InputMaybe<MetadataFilterInput>;
-  /** Filter by customer type name. */
-  name?: InputMaybe<StringFilterInput>;
-  /** Filter by customer type slug. */
-  slug?: InputMaybe<StringFilterInput>;
-};
-
-/**
  * Updates an existing customer.
  *
  * Requires one of the following permissions: MANAGE_USERS.
@@ -7409,18 +6921,6 @@ export type CustomerWhereInput = {
   OR?: InputMaybe<Array<CustomerWhereInput>>;
   /** Filter by addresses data associated with user. */
   addresses?: InputMaybe<AddressFilterInput>;
-  /**
-   * Filter by attributes associated with the customer.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes?: InputMaybe<Array<AssignedAttributeWhereInput>>;
-  /**
-   * Filter by customer type. Filtering by the default customer type also matches users without an explicitly assigned customer type.
-   *
-   * Added in Saleor 3.23.
-   */
-  customerType?: InputMaybe<GlobalIdFilterInput>;
   /** Filter by date joined. */
   dateJoined?: InputMaybe<DateTimeRangeInput>;
   /** Filter by email address. */
@@ -8731,22 +8231,6 @@ export type GiftCard = Node & ObjectWithMetadata & {
    * Requires one of the following permissions: MANAGE_APPS, OWNER.
    */
   app: Maybe<App>;
-  /**
-   * The customer the gift card usage is restricted to.
-   *
-   * Requires one of the following permissions: MANAGE_USERS, OWNER.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedTo: Maybe<User>;
-  /**
-   * Email of the customer the gift card is restricted to.
-   *
-   * Requires one of the following permissions: MANAGE_GIFT_CARD, OWNER.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedToEmail: Maybe<Scalars['String']['output']>;
   /** Slug of the channel where the gift card was bought. */
   boughtInChannel: Maybe<Scalars['String']['output']>;
   /**
@@ -8907,42 +8391,6 @@ export type GiftCardAddNoteInput = {
 };
 
 /**
- * Restrict a gift card so only the given customer can use it.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_GIFT_CARD.
- *
- * Triggers the following webhook events:
- * - GIFT_CARD_UPDATED (async): A gift card was updated.
- */
-export type GiftCardAssignUser = {
-  errors: Array<GiftCardError>;
-  /** The assigned gift card. */
-  giftCard: Maybe<GiftCard>;
-  /** @deprecated Use `errors` field instead. */
-  giftCardErrors: Array<GiftCardError>;
-};
-
-/**
- * Adjust a gift card's balance by a delta.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_GIFT_CARD.
- *
- * Triggers the following webhook events:
- * - GIFT_CARD_UPDATED (async): A gift card was updated.
- */
-export type GiftCardBalanceAdjust = {
-  errors: Array<GiftCardError>;
-  /** The adjusted gift card. */
-  giftCard: Maybe<GiftCard>;
-  /** @deprecated Use `errors` field instead. */
-  giftCardErrors: Array<GiftCardError>;
-};
-
-/**
  * Activate gift cards.
  *
  * Requires one of the following permissions: MANAGE_GIFT_CARD.
@@ -9048,12 +8496,6 @@ export type GiftCardCreate = {
 export type GiftCardCreateInput = {
   /** The gift card tags to add. */
   addTags?: InputMaybe<Array<Scalars['String']['input']>>;
-  /**
-   * ID of the customer the gift card is restricted to.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedTo?: InputMaybe<Scalars['ID']['input']>;
   /** Balance of the gift card. */
   balance: PriceInput;
   /** Slug of a channel from which the email should be sent. */
@@ -9174,7 +8616,6 @@ export type GiftCardError = {
 
 export type GiftCardErrorCode =
   | 'ALREADY_EXISTS'
-  | 'CANNOT_ASSIGN'
   | 'DUPLICATED_INPUT_ITEM'
   | 'EXPIRED_GIFT_CARD'
   | 'GRAPHQL_ERROR'
@@ -9187,12 +8628,6 @@ export type GiftCardErrorCode =
 export type GiftCardEvent = Node & {
   /** App that performed the action. Requires one of the following permissions: MANAGE_APPS, OWNER. */
   app: Maybe<App>;
-  /**
-   * The customer assignment change recorded by the event. Only set for ASSIGNED_TO_USER and UNASSIGNED_FROM_USER events.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedTo: Maybe<GiftCardEventAssignment>;
   /** The gift card balance. */
   balance: Maybe<GiftCardEventBalance>;
   /** Date when event happened at in ISO 8601 format. */
@@ -9221,25 +8656,6 @@ export type GiftCardEvent = Node & {
   user: Maybe<User>;
 };
 
-export type GiftCardEventAssignment = {
-  /**
-   * The customer the gift card is assigned to after this event.
-   *
-   * Requires one of the following permissions: MANAGE_USERS, MANAGE_STAFF, OWNER.
-   */
-  currentAssignedTo: Maybe<User>;
-  /** Email of the customer the gift card is assigned to after this event. */
-  currentAssignedToEmail: Maybe<Scalars['String']['output']>;
-  /**
-   * The customer the gift card was assigned to before this event.
-   *
-   * Requires one of the following permissions: MANAGE_USERS, MANAGE_STAFF, OWNER.
-   */
-  oldAssignedTo: Maybe<User>;
-  /** Email of the customer the gift card was assigned to before this event. */
-  oldAssignedToEmail: Maybe<Scalars['String']['output']>;
-};
-
 export type GiftCardEventBalance = {
   /** Current balance of the gift card. */
   currentBalance: Money;
@@ -9258,8 +8674,6 @@ export type GiftCardEventFilterInput = {
 
 export type GiftCardEventsEnum =
   | 'ACTIVATED'
-  | 'ASSIGNED_TO_USER'
-  | 'BALANCE_ADJUSTED'
   | 'BALANCE_RESET'
   | 'BOUGHT'
   | 'DEACTIVATED'
@@ -9270,20 +8684,12 @@ export type GiftCardEventsEnum =
   | 'RESENT'
   | 'SENT_TO_CUSTOMER'
   | 'TAGS_UPDATED'
-  | 'UNASSIGNED_FROM_USER'
   | 'UPDATED'
   | 'USED_IN_ORDER';
 
-/**
- * Event sent when gift card export is completed.
- *
- * Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
- */
+/** Event sent when gift card export is completed. */
 export type GiftCardExportCompleted = Event & {
-  /**
-   * The export file for gift cards.
-   * @deprecated Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
-   */
+  /** The export file for gift cards. */
   export: Maybe<ExportFile>;
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
@@ -9296,12 +8702,6 @@ export type GiftCardExportCompleted = Event & {
 };
 
 export type GiftCardFilterInput = {
-  /**
-   * Filter by the customer the gift card usage is restricted to.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedTo?: InputMaybe<Array<Scalars['ID']['input']>>;
   code?: InputMaybe<Scalars['String']['input']>;
   createdByEmail?: InputMaybe<Scalars['String']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
@@ -9312,11 +8712,6 @@ export type GiftCardFilterInput = {
   products?: InputMaybe<Array<Scalars['ID']['input']>>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   used?: InputMaybe<Scalars['Boolean']['input']>;
-  /**
-   * Filter by the customer who used a gift card.
-   *
-   * DEPRECATED: this field will be removed.
-   */
   usedBy?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
@@ -9526,24 +8921,6 @@ export type GiftCardTagCountableEdge = {
 
 export type GiftCardTagFilterInput = {
   search?: InputMaybe<Scalars['String']['input']>;
-};
-
-/**
- * Remove a customer restriction from a gift card.
- *
- * Added in Saleor 3.23.
- *
- * Requires one of the following permissions: MANAGE_GIFT_CARD.
- *
- * Triggers the following webhook events:
- * - GIFT_CARD_UPDATED (async): A gift card was updated.
- */
-export type GiftCardUnassignUser = {
-  errors: Array<GiftCardError>;
-  /** The unassigned gift card. */
-  giftCard: Maybe<GiftCard>;
-  /** @deprecated Use `errors` field instead. */
-  giftCardErrors: Array<GiftCardError>;
 };
 
 /**
@@ -12610,7 +11987,7 @@ export type Mutation = {
   /**
    * Deletes attributes.
    *
-   * Requires one of the following permissions, depending on the type of each attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PAGE_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_DELETED (async): An attribute was deleted.
@@ -12641,7 +12018,7 @@ export type Mutation = {
   /**
    * Deletes an attribute.
    *
-   * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_DELETED (async): An attribute was deleted.
@@ -12650,7 +12027,7 @@ export type Mutation = {
   /**
    * Reorder the values of an attribute.
    *
-   * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_VALUE_UPDATED (async): An attribute value was updated.
@@ -12666,7 +12043,7 @@ export type Mutation = {
   /**
    * Updates attribute.
    *
-   * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_UPDATED (async): An attribute was updated.
@@ -12675,7 +12052,7 @@ export type Mutation = {
   /**
    * Deletes values of attributes.
    *
-   * Requires one of the following permissions, depending on the type of each value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PAGE_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_VALUE_DELETED (async): An attribute value was deleted.
@@ -12691,7 +12068,7 @@ export type Mutation = {
   /**
    * Creates a value for an attribute.
    *
-   * Requires one of the following permissions, depending on the attribute type: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCTS.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_VALUE_CREATED (async): An attribute value was created.
@@ -12701,7 +12078,7 @@ export type Mutation = {
   /**
    * Deletes a value of an attribute.
    *
-   * Requires one of the following permissions, depending on the type of the value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_VALUE_DELETED (async): An attribute value was deleted.
@@ -12717,7 +12094,7 @@ export type Mutation = {
   /**
    * Updates value of an attribute.
    *
-   * Requires one of the following permissions, depending on the type of the value's attribute: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES for `PRODUCT_TYPE` attributes, MANAGE_PAGE_TYPES_AND_ATTRIBUTES for `PAGE_TYPE` attributes, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES for `CUSTOMER_TYPE` attributes.
+   * Requires one of the following permissions: MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES.
    *
    * Triggers the following webhook events:
    * - ATTRIBUTE_VALUE_UPDATED (async): An attribute value was updated.
@@ -12937,10 +12314,7 @@ export type Mutation = {
    * - CHECKOUT_UPDATED (async): A checkout was updated.
    */
   checkoutLinesUpdate: Maybe<CheckoutLinesUpdate>;
-  /**
-   * Creates a new payment for given checkout.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Creates a new payment for given checkout. */
   checkoutPaymentCreate: Maybe<CheckoutPaymentCreate>;
   /**
    * Remove a gift card or a voucher from a checkout.
@@ -13084,72 +12458,6 @@ export type Mutation = {
    * - CUSTOMER_DELETED (async): A customer account was deleted.
    */
   customerDelete: Maybe<CustomerDelete>;
-  /**
-   * Assign attributes to a given customer type.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
-   */
-  customerTypeAssignAttributes: Maybe<CustomerTypeAssignAttributes>;
-  /**
-   * Creates a new customer type.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_CREATED (async): A new customer type was created.
-   */
-  customerTypeCreate: Maybe<CustomerTypeCreate>;
-  /**
-   * Deletes a customer type. Users of the deleted customer type are reassigned to the default customer type.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_DELETED (async): A customer type was deleted.
-   */
-  customerTypeDelete: Maybe<CustomerTypeDelete>;
-  /**
-   * Reorder the attributes of a customer type.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
-   */
-  customerTypeReorderAttributes: Maybe<CustomerTypeReorderAttributes>;
-  /**
-   * Unassign attributes from a given customer type. Values already assigned to users are kept in the database, but are hidden until the attribute is assigned to the user's customer type again.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
-   */
-  customerTypeUnassignAttributes: Maybe<CustomerTypeUnassignAttributes>;
-  /**
-   * Updates a customer type.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES.
-   *
-   * Triggers the following webhook events:
-   * - CUSTOMER_TYPE_UPDATED (async): A customer type was updated.
-   */
-  customerTypeUpdate: Maybe<CustomerTypeUpdate>;
   /**
    * Updates an existing customer.
    *
@@ -13307,28 +12615,6 @@ export type Mutation = {
    */
   giftCardAddNote: Maybe<GiftCardAddNote>;
   /**
-   * Restrict a gift card so only the given customer can use it.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_GIFT_CARD.
-   *
-   * Triggers the following webhook events:
-   * - GIFT_CARD_UPDATED (async): A gift card was updated.
-   */
-  giftCardAssignUser: Maybe<GiftCardAssignUser>;
-  /**
-   * Adjust a gift card's balance by a delta.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_GIFT_CARD.
-   *
-   * Triggers the following webhook events:
-   * - GIFT_CARD_UPDATED (async): A gift card was updated.
-   */
-  giftCardBalanceAdjust: Maybe<GiftCardBalanceAdjust>;
-  /**
    * Activate gift cards.
    *
    * Requires one of the following permissions: MANAGE_GIFT_CARD.
@@ -13408,17 +12694,6 @@ export type Mutation = {
    * Requires one of the following permissions: MANAGE_GIFT_CARD.
    */
   giftCardSettingsUpdate: Maybe<GiftCardSettingsUpdate>;
-  /**
-   * Remove a customer restriction from a gift card.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_GIFT_CARD.
-   *
-   * Triggers the following webhook events:
-   * - GIFT_CARD_UPDATED (async): A gift card was updated.
-   */
-  giftCardUnassignUser: Maybe<GiftCardUnassignUser>;
   /**
    * Update a gift card.
    *
@@ -13590,7 +12865,6 @@ export type Mutation = {
    * Capture an order.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   orderCapture: Maybe<OrderCapture>;
   /**
@@ -13745,7 +13019,6 @@ export type Mutation = {
    * Refund an order.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   orderRefund: Maybe<OrderRefund>;
   /**
@@ -13771,7 +13044,6 @@ export type Mutation = {
    * Void an order.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   orderVoid: Maybe<OrderVoid>;
   /**
@@ -13868,13 +13140,9 @@ export type Mutation = {
    * Captures the authorized payment amount.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   paymentCapture: Maybe<PaymentCapture>;
-  /**
-   * Check payment balance.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Check payment balance. */
   paymentCheckBalance: Maybe<PaymentCheckBalance>;
   /** Initializes a payment gateway session. It triggers the webhook `PAYMENT_GATEWAY_INITIALIZE_SESSION`, to the requested `paymentGateways`. If `paymentGateways` is not provided, the webhook will be send to all subscribed payment gateways. There is a limit of 100 transaction items per checkout / order. */
   paymentGatewayInitialize: Maybe<PaymentGatewayInitialize>;
@@ -13887,10 +13155,7 @@ export type Mutation = {
    * - PAYMENT_GATEWAY_INITIALIZE_TOKENIZATION_SESSION (sync): The customer requested to initialize payment gateway for tokenization.
    */
   paymentGatewayInitializeTokenization: Maybe<PaymentGatewayInitializeTokenization>;
-  /**
-   * Initializes payment process when it is required by gateway.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Initializes payment process when it is required by gateway. */
   paymentInitialize: Maybe<PaymentInitialize>;
   /**
    * Tokenize payment method.
@@ -13914,14 +13179,12 @@ export type Mutation = {
    * Refunds the captured payment amount.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   paymentRefund: Maybe<PaymentRefund>;
   /**
    * Voids the authorized payment.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   paymentVoid: Maybe<PaymentVoid>;
   /**
@@ -15406,7 +14669,6 @@ export type MutationCollectionUpdateArgs = {
 
 export type MutationConfirmAccountArgs = {
   email: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
   token: Scalars['String']['input'];
 };
 
@@ -15441,40 +14703,6 @@ export type MutationCustomerCreateArgs = {
 export type MutationCustomerDeleteArgs = {
   externalReference?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type MutationCustomerTypeAssignAttributesArgs = {
-  attributeIds: Array<Scalars['ID']['input']>;
-  customerTypeId: Scalars['ID']['input'];
-};
-
-
-export type MutationCustomerTypeCreateArgs = {
-  input: CustomerTypeCreateInput;
-};
-
-
-export type MutationCustomerTypeDeleteArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationCustomerTypeReorderAttributesArgs = {
-  customerTypeId: Scalars['ID']['input'];
-  moves: Array<ReorderInput>;
-};
-
-
-export type MutationCustomerTypeUnassignAttributesArgs = {
-  attributeIds: Array<Scalars['ID']['input']>;
-  customerTypeId: Scalars['ID']['input'];
-};
-
-
-export type MutationCustomerTypeUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: CustomerTypeUpdateInput;
 };
 
 
@@ -15613,18 +14841,6 @@ export type MutationGiftCardAddNoteArgs = {
 };
 
 
-export type MutationGiftCardAssignUserArgs = {
-  id: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
-};
-
-
-export type MutationGiftCardBalanceAdjustArgs = {
-  amount: Scalars['Decimal']['input'];
-  id: Scalars['ID']['input'];
-};
-
-
 export type MutationGiftCardBulkActivateArgs = {
   ids: Array<Scalars['ID']['input']>;
 };
@@ -15667,11 +14883,6 @@ export type MutationGiftCardResendArgs = {
 
 export type MutationGiftCardSettingsUpdateArgs = {
   input: GiftCardSettingsUpdateInput;
-};
-
-
-export type MutationGiftCardUnassignUserArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -16851,8 +16062,7 @@ export type MutationWebhookCreateArgs = {
 
 
 export type MutationWebhookDeleteArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  identifier?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
 };
 
 
@@ -16869,8 +16079,7 @@ export type MutationWebhookTriggerArgs = {
 
 
 export type MutationWebhookUpdateArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  identifier?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
   input: WebhookUpdateInput;
 };
 
@@ -17072,10 +16281,7 @@ export type Order = Node & ObjectWithMetadata & {
   paymentStatus: PaymentChargeStatusEnum;
   /** User-friendly payment status. */
   paymentStatusDisplay: Scalars['String']['output'];
-  /**
-   * List of payments for the order.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** List of payments for the order. */
   payments: Array<Payment>;
   /** List of private metadata items. Requires staff permissions to access. */
   privateMetadata: Array<MetadataItem>;
@@ -18168,11 +17374,6 @@ export type OrderFilterInput = {
   isPreorder?: InputMaybe<Scalars['Boolean']['input']>;
   metadata?: InputMaybe<Array<MetadataFilter>>;
   numbers?: InputMaybe<Array<Scalars['String']['input']>>;
-  /**
-   * Filter orders by payment charge status.
-   *
-   * DEPRECATED: this field will be removed. The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
   paymentStatus?: InputMaybe<Array<PaymentChargeStatusEnum>>;
   search?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Array<OrderStatusFilter>>;
@@ -18588,14 +17789,6 @@ export type OrderLine = Node & ObjectWithMetadata & {
   metafield: Maybe<Scalars['String']['output']>;
   /** Public metadata. Use `keys` to control which fields you want to include. The default is to include everything. */
   metafields: Maybe<Scalars['Metadata']['output']>;
-  /**
-   * Reason explaining why a custom price was set on the line, copied from the checkout line when the order was created from a checkout.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: MANAGE_ORDERS.
-   */
-  priceOverrideReason: Maybe<Scalars['String']['output']>;
   /** List of private metadata items. Requires staff permissions to access. */
   privateMetadata: Array<MetadataItem>;
   /**
@@ -20197,11 +19390,7 @@ export type PasswordLoginModeEnum =
   | 'DISABLED'
   | 'ENABLED';
 
-/**
- * Represents a payment of a given type.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment of a given type. */
 export type Payment = Node & ObjectWithMetadata & {
   /**
    * List of actions that can be performed in the current state of a payment.
@@ -20284,59 +19473,36 @@ export type Payment = Node & ObjectWithMetadata & {
 };
 
 
-/**
- * Represents a payment of a given type.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment of a given type. */
 export type PaymentMetafieldArgs = {
   key: Scalars['String']['input'];
 };
 
 
-/**
- * Represents a payment of a given type.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment of a given type. */
 export type PaymentMetafieldsArgs = {
   keys?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
-/**
- * Represents a payment of a given type.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment of a given type. */
 export type PaymentPrivateMetafieldArgs = {
   key: Scalars['String']['input'];
 };
 
 
-/**
- * Represents a payment of a given type.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment of a given type. */
 export type PaymentPrivateMetafieldsArgs = {
   keys?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-/**
- * Authorize payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Authorize payment. */
 export type PaymentAuthorize = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -20357,20 +19523,13 @@ export type PaymentCapture = {
   paymentErrors: Array<PaymentError>;
 };
 
-/**
- * Capture payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Capture payment. */
 export type PaymentCaptureEvent = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -20397,11 +19556,6 @@ export type PaymentCheckBalance = {
   paymentErrors: Array<PaymentError>;
 };
 
-/**
- * Fields required to check a payment balance.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
 export type PaymentCheckBalanceInput = {
   /** Information about card. */
   card: CardInput;
@@ -20413,20 +19567,13 @@ export type PaymentCheckBalanceInput = {
   method: Scalars['String']['input'];
 };
 
-/**
- * Confirm payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Confirm payment. */
 export type PaymentConfirmEvent = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -20481,11 +19628,6 @@ export type PaymentErrorCode =
   | 'UNAVAILABLE_VARIANT_IN_CHANNEL'
   | 'UNIQUE';
 
-/**
- * Filtering options for payments.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
 export type PaymentFilterInput = {
   checkouts?: InputMaybe<Array<Scalars['ID']['input']>>;
   /** Filter by ids. */
@@ -20645,11 +19787,7 @@ export type PaymentInitialize = {
   paymentErrors: Array<PaymentError>;
 };
 
-/**
- * Server-side data generated by a payment gateway. Optional step when the payment provider requires an additional action to initialize payment session.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Server-side data generated by a payment gateway. Optional step when the payment provider requires an additional action to initialize payment session. */
 export type PaymentInitialized = {
   /** Initialized data by gateway. */
   data: Maybe<Scalars['JSONString']['output']>;
@@ -20659,11 +19797,6 @@ export type PaymentInitialized = {
   name: Scalars['String']['output'];
 };
 
-/**
- * Fields required to create a payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
 export type PaymentInput = {
   /** Total amount of the transaction, including all taxes and discounts. If no amount is provided, the checkout total will be used. */
   amount?: InputMaybe<Scalars['PositiveDecimal']['input']>;
@@ -20683,11 +19816,7 @@ export type PaymentInput = {
   token?: InputMaybe<Scalars['String']['input']>;
 };
 
-/**
- * List payment gateways.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** List payment gateways. */
 export type PaymentListGateways = Event & {
   /** The checkout the event relates to. */
   checkout: Maybe<Checkout>;
@@ -20898,20 +20027,13 @@ export type PaymentMethodTypeEnumFilterInput = {
   oneOf?: InputMaybe<Array<PaymentMethodTypeEnum>>;
 };
 
-/**
- * Process payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Process payment. */
 export type PaymentProcessEvent = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -20932,20 +20054,13 @@ export type PaymentRefund = {
   paymentErrors: Array<PaymentError>;
 };
 
-/**
- * Refund payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Refund payment. */
 export type PaymentRefundEvent = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -21000,11 +20115,7 @@ export type PaymentSettingsInput = {
   releaseFundsForExpiredCheckouts?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/**
- * Represents a payment source stored for user in payment gateway, such as credit card.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Represents a payment source stored for user in payment gateway, such as credit card. */
 export type PaymentSource = {
   /** Stored credit card details if available. */
   creditCardInfo: Maybe<CreditCard>;
@@ -21033,20 +20144,13 @@ export type PaymentVoid = {
   paymentErrors: Array<PaymentError>;
 };
 
-/**
- * Void payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** Void payment. */
 export type PaymentVoidEvent = Event & {
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
   /** The user or application that triggered the event. */
   issuingPrincipal: Maybe<IssuingPrincipal>;
-  /**
-   * Look up a payment.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** Look up a payment. */
   payment: Maybe<Payment>;
   /** The application receiving the webhook. */
   recipient: Maybe<App>;
@@ -21070,7 +20174,6 @@ export type PermissionEnum =
   | 'MANAGE_APPS'
   | 'MANAGE_CHANNELS'
   | 'MANAGE_CHECKOUTS'
-  | 'MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES'
   | 'MANAGE_DISCOUNTS'
   | 'MANAGE_GIFT_CARD'
   | 'MANAGE_MENUS'
@@ -22202,16 +21305,9 @@ export type ProductErrorCode =
   | 'UNSUPPORTED_MEDIA_PROVIDER'
   | 'UNSUPPORTED_MIME_TYPE';
 
-/**
- * Event sent when product export is completed.
- *
- * Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
- */
+/** Event sent when product export is completed. */
 export type ProductExportCompleted = Event & {
-  /**
-   * The export file for products.
-   * @deprecated Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
-   */
+  /** The export file for products. */
   export: Maybe<ExportFile>;
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
@@ -25286,22 +24382,6 @@ export type Query = {
   /** List of the shop's collections. Requires one of the following permissions to include the unpublished items: MANAGE_ORDERS, MANAGE_DISCOUNTS, MANAGE_PRODUCTS. */
   collections: Maybe<CollectionCountableConnection>;
   /**
-   * Look up a customer type by ID.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES, MANAGE_USERS.
-   */
-  customerType: Maybe<CustomerType>;
-  /**
-   * List of the customer types.
-   *
-   * Added in Saleor 3.23.
-   *
-   * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP, MANAGE_CUSTOMER_TYPES_AND_ATTRIBUTES, MANAGE_USERS.
-   */
-  customerTypes: Maybe<CustomerTypeCountableConnection>;
-  /**
    * List of the shop's customers. This list includes all users who registered through the accountRegister mutation. Additionally, staff users who have placed an order using their account will also appear in this list.
    *
    * Requires one of the following permissions: MANAGE_ORDERS, MANAGE_USERS.
@@ -25411,14 +24491,12 @@ export type Query = {
    * Look up a payment by ID.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   payment: Maybe<Payment>;
   /**
    * List of payments.
    *
    * Requires one of the following permissions: MANAGE_ORDERS.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
    */
   payments: Maybe<PaymentCountableConnection>;
   /**
@@ -25771,22 +24849,6 @@ export type QueryCollectionsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<CollectionSortingInput>;
   where?: InputMaybe<CollectionWhereInput>;
-};
-
-
-export type QueryCustomerTypeArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryCustomerTypesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  sortBy?: InputMaybe<CustomerTypeSortingInput>;
-  where?: InputMaybe<CustomerTypeWhereInput>;
 };
 
 
@@ -27960,20 +27022,12 @@ export type ShippingZoneUpdatedShippingZoneArgs = {
 
 /** Represents a shop resource containing general shop data and configuration. */
 export type Shop = ObjectWithMetadata & {
-  /** Controls the method used for merging existing orders and giftcards when password-based authentication is used. Learn more at https://docs.saleor.io/upgrade-guides/core/migrate-account-merging */
-  accountConfirmMergeMode: AccountConfirmModeEnum;
   /**
    * Determines if user can login without confirmation when `enableAccountConfirmation` is enabled.
    *
    * Requires one of the following permissions: MANAGE_SETTINGS.
    */
   allowLoginWithoutConfirmation: Maybe<Scalars['Boolean']['output']>;
-  /**
-   * Determines whether the GraphQL API accepts storefront requests (anonymous requests and authenticated non-staff customers). When disabled, only apps and staff users may call the API directly; all other requests are rejected with an HTTP 401 and the `STOREFRONT_TRAFFIC_NOT_ALLOWED` error code.
-   *
-   * Added in Saleor 3.23.
-   */
-  allowStorefrontTraffic: Scalars['Boolean']['output'];
   /**
    * List of announcements for this shop.
    *
@@ -27982,10 +27036,7 @@ export type Shop = ObjectWithMetadata & {
   announcements: Array<Announcement>;
   /** List of available external authentications. */
   availableExternalAuthentications: Array<ExternalAuthentication>;
-  /**
-   * List of available payment gateways.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** List of available payment gateways. */
   availablePaymentGateways: Array<PaymentGateway>;
   /** Shipping methods that are available for the shop. */
   availableShippingMethods: Maybe<Array<ShippingMethod>>;
@@ -28282,16 +27333,8 @@ export type ShopMetadataUpdated = Event & {
 };
 
 export type ShopSettingsInput = {
-  /** Controls the method used for merging existing orders and giftcards when password-based authentication is used. Learn more at https://docs.saleor.io/upgrade-guides/core/migrate-account-merging */
-  accountConfirmMergeMode?: InputMaybe<AccountConfirmModeEnum>;
   /** Enable possibility to login without account confirmation. */
   allowLoginWithoutConfirmation?: InputMaybe<Scalars['Boolean']['input']>;
-  /**
-   * Determines whether the GraphQL API accepts storefront requests (anonymous requests and authenticated non-staff customers). When disabled, only apps and staff users may call the API directly; all other requests are rejected with an HTTP 401 and the `STOREFRONT_TRAFFIC_NOT_ALLOWED` error code.
-   *
-   * Added in Saleor 3.23.
-   */
-  allowStorefrontTraffic?: InputMaybe<Scalars['Boolean']['input']>;
   /**
    * Charge taxes on shipping.
    *
@@ -28336,12 +27379,6 @@ export type ShopSettingsInput = {
    * Warning: never store sensitive information, including financial data such as credit card details.
    */
   metadata?: InputMaybe<Array<MetadataInput>>;
-  /**
-   * Shop's name.
-   *
-   * Added in Saleor 3.23.
-   */
-  name?: InputMaybe<Scalars['String']['input']>;
   /**
    * Controls whether password-based authentication is allowed.
    *
@@ -28544,12 +27581,6 @@ export type StaffDeleted = Event & {
 export type StaffError = {
   /** A type of address that causes the error. */
   addressType: Maybe<AddressTypeEnum>;
-  /**
-   * List of attributes IDs which causes the error.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes: Maybe<Array<Scalars['ID']['output']>>;
   /** The error code. */
   code: AccountErrorCode;
   /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
@@ -29931,11 +28962,7 @@ export type TimePeriodTypeEnum =
 export type TokenizedPaymentFlowEnum =
   | 'INTERACTIVE';
 
-/**
- * An object representing a single payment.
- *
- * The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
- */
+/** An object representing a single payment. */
 export type Transaction = Node & {
   /** Total amount of the transaction. */
   amount: Maybe<Money>;
@@ -29945,7 +28972,7 @@ export type Transaction = Node & {
   error: Maybe<Scalars['String']['output']>;
   /**
    * Response returned by payment gateway.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
+   * @deprecated This field is a part of a legacy Payments API. Please use apps instead.
    */
   gatewayResponse: Scalars['JSONString']['output'];
   /** ID of the transaction. */
@@ -30866,23 +29893,11 @@ export type UploadErrorCode =
   | 'UNSUPPORTED_MIME_TYPE';
 
 /** Represents user data. */
-export type User = Node & ObjectWithAttributes & ObjectWithMetadata & {
+export type User = Node & ObjectWithMetadata & {
   /** List of channels the user has access to. The sum of channels from all user groups. If at least one group has `restrictedAccessToChannels` set to False - all channels are returned. */
   accessibleChannels: Maybe<Array<Channel>>;
   /** List of all user's addresses. */
   addresses: Array<Address>;
-  /**
-   * Get a single attribute assigned to the user by attribute slug. The attribute is looked up among the attributes of the user's customer type. Requires one of the following permissions: MANAGE_USERS, OWNER. The owner can access only attributes that are visible in the storefront.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedAttribute: Maybe<AssignedAttribute>;
-  /**
-   * List of attributes assigned to the user through the user's customer type. Requires one of the following permissions: MANAGE_USERS, OWNER. The owner can access only attributes that are visible in the storefront.
-   *
-   * Added in Saleor 3.23.
-   */
-  assignedAttributes: Array<AssignedAttribute>;
   /** The avatar of the user. */
   avatar: Maybe<Image>;
   /**
@@ -30899,12 +29914,6 @@ export type User = Node & ObjectWithAttributes & ObjectWithMetadata & {
   checkoutTokens: Maybe<Array<Scalars['UUID']['output']>>;
   /** Returns checkouts assigned to this user. The query will not initiate any external requests, including fetching external shipping methods, filtering available shipping methods, or performing external tax calculations. */
   checkouts: Maybe<CheckoutCountableConnection>;
-  /**
-   * The customer type assigned to the user. Requires one of the following permissions: MANAGE_USERS, OWNER.
-   *
-   * Added in Saleor 3.23.
-   */
-  customerType: Maybe<CustomerType>;
   /** The data when the user create account. */
   dateJoined: Scalars['DateTime']['output'];
   /** The default billing address of the user. */
@@ -30975,27 +29984,12 @@ export type User = Node & ObjectWithAttributes & ObjectWithMetadata & {
   restrictedAccessToChannels: Scalars['Boolean']['output'];
   /** Returns a list of user's stored payment methods that can be used in provided channel. The field returns a list of stored payment methods by payment apps. When `amount` is not provided, 0 will be used as default value. */
   storedPaymentMethods: Maybe<Array<StoredPaymentMethod>>;
-  /**
-   * List of stored payment sources. The field returns a list of payment sources stored for payment plugins.
-   * @deprecated The legacy Payments API is deprecated and will be removed. Use the Transactions API instead.
-   */
+  /** List of stored payment sources. The field returns a list of payment sources stored for payment plugins. */
   storedPaymentSources: Maybe<Array<PaymentSource>>;
   /** The data when the user last update the account information. */
   updatedAt: Scalars['DateTime']['output'];
   /** List of user's permissions. */
   userPermissions: Maybe<Array<UserPermission>>;
-};
-
-
-/** Represents user data. */
-export type UserAssignedAttributeArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
-/** Represents user data. */
-export type UserAssignedAttributesArgs = {
-  limit?: InputMaybe<Scalars['PositiveInt']['input']>;
 };
 
 
@@ -31137,20 +30131,8 @@ export type UserCountableEdge = {
 };
 
 export type UserCreateInput = {
-  /**
-   * List of attribute values to assign to the user. The attributes must belong to the customer type the user ends up with.
-   *
-   * Added in Saleor 3.23.
-   */
-  attributes?: InputMaybe<Array<AttributeValueInput>>;
   /** Slug of a channel which will be used for notify user. Optional when only one channel exists. */
   channel?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * ID of the customer type to assign to the user. If not provided when creating a customer, the default customer type is assigned.
-   *
-   * Added in Saleor 3.23.
-   */
-  customerType?: InputMaybe<Scalars['ID']['input']>;
   /** Billing address of the customer. */
   defaultBillingAddress?: InputMaybe<AddressInput>;
   /** Shipping address of the customer. */
@@ -31665,14 +30647,9 @@ export type VoucherCodeCountableEdge = {
  * Event sent when voucher code export is completed.
  *
  * Added in Saleor 3.18.
- *
- * Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
  */
 export type VoucherCodeExportCompleted = Event & {
-  /**
-   * The export file for voucher codes.
-   * @deprecated Export functionality is deprecated and will be removed. All data can be fetched via the GraphQL API and parsed into the desired format by apps or external tools.
-   */
+  /** The export file for voucher codes. */
   export: Maybe<ExportFile>;
   /** Time of the event. */
   issuedAt: Maybe<Scalars['DateTime']['output']>;
@@ -32383,12 +31360,6 @@ export type Webhook = Node & {
   events: Array<WebhookEvent>;
   /** The ID of webhook. */
   id: Scalars['ID']['output'];
-  /**
-   * The unique identifier of the webhook, set by the app. Unique per app, null when not set.
-   *
-   * Added in Saleor 3.23.
-   */
-  identifier: Maybe<Scalars['String']['output']>;
   /** Informs if webhook is activated. */
   isActive: Scalars['Boolean']['output'];
   /** The name of webhook. */
@@ -32442,12 +31413,6 @@ export type WebhookCreateInput = {
    * DEPRECATED: this field will be removed. Use `asyncEvents` or `syncEvents` instead.
    */
   events?: InputMaybe<Array<WebhookEventTypeEnum>>;
-  /**
-   * The unique identifier of the webhook, set by the app. Unique per app. Maximum length is 256 characters.
-   *
-   * Added in Saleor 3.23.
-   */
-  identifier?: InputMaybe<Scalars['String']['input']>;
   /** Determine if webhook will be set active or not. */
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name of the webhook. */
@@ -32648,24 +31613,6 @@ export type WebhookEventTypeAsyncEnum =
   | 'CUSTOMER_DELETED'
   /** A customer account metadata is updated. */
   | 'CUSTOMER_METADATA_UPDATED'
-  /**
-   * A new customer type is created.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_CREATED'
-  /**
-   * A customer type is deleted.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_DELETED'
-  /**
-   * A customer type is updated.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_UPDATED'
   /** A customer account is updated. */
   | 'CUSTOMER_UPDATED'
   /** A draft order is created. */
@@ -32993,24 +31940,6 @@ export type WebhookEventTypeEnum =
   | 'CUSTOMER_DELETED'
   /** A customer account metadata is updated. */
   | 'CUSTOMER_METADATA_UPDATED'
-  /**
-   * A new customer type is created.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_CREATED'
-  /**
-   * A customer type is deleted.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_DELETED'
-  /**
-   * A customer type is updated.
-   *
-   * Added in Saleor 3.23.
-   */
-  | 'CUSTOMER_TYPE_UPDATED'
   /** A customer account is updated. */
   | 'CUSTOMER_UPDATED'
   /** A draft order is created. */
@@ -33358,9 +32287,6 @@ export type WebhookSampleEventTypeEnum =
   | 'CUSTOMER_CREATED'
   | 'CUSTOMER_DELETED'
   | 'CUSTOMER_METADATA_UPDATED'
-  | 'CUSTOMER_TYPE_CREATED'
-  | 'CUSTOMER_TYPE_DELETED'
-  | 'CUSTOMER_TYPE_UPDATED'
   | 'CUSTOMER_UPDATED'
   | 'DRAFT_ORDER_CREATED'
   | 'DRAFT_ORDER_DELETED'
@@ -33525,12 +32451,6 @@ export type WebhookUpdateInput = {
    * DEPRECATED: this field will be removed. Use `asyncEvents` or `syncEvents` instead.
    */
   events?: InputMaybe<Array<WebhookEventTypeEnum>>;
-  /**
-   * The unique identifier of the webhook, set by the app. Unique per app. Maximum length is 256 characters. Pass a blank value to clear it.
-   *
-   * Added in Saleor 3.23.
-   */
-  identifier?: InputMaybe<Scalars['String']['input']>;
   /** Determine if webhook will be set active or not. */
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   /** The new name of the webhook. */
