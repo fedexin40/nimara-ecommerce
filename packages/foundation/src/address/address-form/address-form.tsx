@@ -32,11 +32,13 @@ const nameFormRow = [
     name: "firstName",
     type: "text" as FieldType,
     isRequired: true,
+    autoComplete: "given-name",
   },
   {
     name: "lastName",
     type: "text" as FieldType,
     isRequired: true,
+    autoComplete: "family-name",
   },
 ];
 
@@ -46,6 +48,7 @@ const phoneCodeRow = [
     type: "text" as FieldType,
     isRequired: false,
     inputMode: "tel",
+    autoComplete: "tel",
   },
 ];
 
@@ -96,6 +99,7 @@ export const AddressForm = ({
       name: "country",
       type: "select" as FieldType,
       isRequired: true,
+      autoComplete: "country",
       onChange: handleChangeCountry,
       options: countries.map((country) => ({
         value: country.value,

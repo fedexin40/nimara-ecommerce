@@ -75,7 +75,7 @@ export const StripePaymentElement = ({
         },
       },
       layout: {
-        defaultCollapsed: false,
+        defaultCollapsed: true,
         paymentMethodLogoPosition: "start",
         type: "accordion",
       },

@@ -10,8 +10,10 @@ import type { StripePaymentInitializeInfra } from "../types";
 type PaymentInitializeData = {
   paymentIntent: {
     clientSecret: string;
+    client_secret: string;
     publishableKey: string;
   };
+  publishableKey: string;
 };
 
 export const paymentInitializeTransactionInfra =
@@ -94,10 +96,10 @@ export const paymentInitializeTransactionInfra =
       return err([{ code: "TRANSACTION_INITIALIZE_ERROR" }]);
     }
 
-    const { paymentIntent } = (initialize.data ??
+    const { paymentIntent, publishableKey } = (initialize.data ??
       {}) as Partial<PaymentInitializeData>;
 
-    if (!paymentIntent?.clientSecret || !paymentIntent.publishableKey) {
+    if (!paymentIntent?.client_secret || !publishableKey) {
       logger.error("Transaction initialization returned no session data.", {
         amount,
         id,
@@ -107,9 +109,9 @@ export const paymentInitializeTransactionInfra =
     }
 
     return ok({
-      gatewayConfig: { publishableKey: paymentIntent.publishableKey },
+      gatewayConfig: { publishableKey: publishableKey },
       providerData: {
-        clientSecret: paymentIntent.clientSecret,
+        clientSecret: paymentIntent.client_secret,
       },
       /**
        * The event id is unique per initialization, so it identifies this

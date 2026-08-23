@@ -10,25 +10,32 @@ import {
 } from "@nimara/domain/objects/Error";
 import { type PaymentMethod } from "@nimara/domain/objects/Payment";
 import { useRouter } from "@nimara/i18n/routing";
+import { RadioGroup, RadioGroupItem } from "@nimara/ui/components/radio-group";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@nimara/ui/components/tabs";
+import { useToast } from "@nimara/ui/hooks";
 import { cn } from "@nimara/ui/lib/utils";
 
 import { PaymentMethods } from "@/features/checkout/payment-methods";
 import { usePaymentData } from "@/features/payment/hooks/use-payment-data";
+import { isGlobalError } from "@/foundation/errors/errors";
 
+import { updateBillingAddress } from "./actions";
 import { BillingAddressSection } from "./components/billing-address-section";
 import { NewPaymentMethodSection } from "./components/new-payment-method-section";
 import { PlaceOrderButton } from "./components/place-order-button";
 import { usePaymentForm } from "./hooks/use-payment-form";
 import { usePaymentSubmit } from "./hooks/use-payment-submit";
-import { type PaymentSchema } from "./schema";
+import { PayPalPayment } from "./paypal";
+import { type BillingAddressPath, type PaymentSchema } from "./schema";
 import { type TabName } from "./tabs/address-tab";
 import { type CommonPaymentProps } from "./types";
+
+type PaymentProvidersType = "stripe" | "paypal";
 
 type CheckoutPaymentProps = CommonPaymentProps & {
   paymentGatewayMethods: PaymentMethod[];
@@ -51,12 +58,16 @@ export const CheckoutPayment = ({
 }: CheckoutPaymentProps) => {
   const t = useTranslations();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [errors, setErrors] = useState<AppErrorCode[]>(
     errorCode ? [errorCode] : [],
   );
+  const [PaymentProvider, setPaymentProvider] = useState<
+    PaymentProvidersType | undefined
+  >(undefined);
   const hasSavedPaymentMethods = paymentGatewayMethods.length > 0;
   const [paymentMethodTab, setPaymentMethodTab] = useState<TabName>(
     hasSavedPaymentMethods ? "saved" : "new",
@@ -263,16 +274,119 @@ export const CheckoutPayment = ({
             </TabsContent>
 
             <TabsContent value="new">
-              <NewPaymentMethodSection
-                checkout={checkout}
-                initializeData={initializeData}
-                isMounted={isMounted}
-                isProcessing={isProcessing}
-                onReady={() => setIsMounted(true)}
-                ref={elementsRef}
-                showSaveForFutureUse={!!user}
-                transactionData={transactionData}
-              />
+              <RadioGroup
+                value={PaymentProvider}
+                onValueChange={(value) =>
+                  setPaymentProvider(value as PaymentProvidersType)
+                }
+                className="gap-4"
+              >
+                <label className="flex w-full cursor-pointer flex-col gap-3 rounded-md border p-4">
+                  {/* Radio + descripción */}
+                  <div className="flex w-full items-start gap-3">
+                    <RadioGroupItem value="stripe" className="mt-1" />
+
+                    <div className="flex-1">
+                      <p className="font-medium">Paga con tu tarjeta u OXXO</p>
+                      <p className="text-sm text-muted-foreground">
+                        Paga con tu tarjeta de débito o 3 y 6 meses sin
+                        intereses con tu tarjeta de credito, además de OXXO y
+                        wallets.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Contenido de Stripe */}
+                  <div
+                    className={cn("w-full", {
+                      hidden: PaymentProvider !== "stripe",
+                    })}
+                  >
+                    <div className="w-full">
+                      <NewPaymentMethodSection
+                        checkout={checkout}
+                        initializeData={initializeData}
+                        isMounted={isMounted}
+                        isProcessing={isProcessing}
+                        onReady={() => setIsMounted(true)}
+                        ref={elementsRef}
+                        showSaveForFutureUse={!!user}
+                        transactionData={transactionData}
+                      />
+                    </div>
+
+                    <div className="w-full">
+                      <PlaceOrderButton
+                        errors={errors}
+                        isDisabled={isCountryChanging || !canProceed}
+                        isLoading={isLoading}
+                      />
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex cursor-pointer items-start gap-3 rounded-md border p-4">
+                  <RadioGroupItem value="paypal" className="mt-1" />
+
+                  <div className="flex-1">
+                    <p className="font-medium">PayPal</p>
+                    <p className="text-sm text-muted-foreground">
+                      Paga con tu cuenta PayPal.
+                    </p>
+
+                    <div
+                      className={cn("mt-4 w-full", {
+                        hidden: PaymentProvider !== "paypal",
+                      })}
+                    >
+                      <PayPalPayment
+                        checkout={checkout}
+                        onUpdateBillingAddress={form.handleSubmit(
+                          async ({
+                            sameAsShippingAddress,
+                            saveAddressForFutureUse,
+                            billingAddress,
+                          }) => {
+                            delete billingAddress?.id;
+
+                            const result = await updateBillingAddress({
+                              checkout,
+                              input: {
+                                sameAsShippingAddress,
+                                saveAddressForFutureUse,
+                                billingAddress,
+                              },
+                              revalidateCheckout: false,
+                            });
+
+                            if (!result.ok) {
+                              result.errors.forEach(({ field, code }) => {
+                                if (isGlobalError(field)) {
+                                  toast({
+                                    variant: "destructive",
+                                    description: t(`errors.${code}`),
+                                  });
+                                } else {
+                                  form.setError(
+                                    `billingAddress.${field}` as BillingAddressPath,
+                                    {
+                                      message: t(`errors.${code}`),
+                                    },
+                                  );
+                                }
+                              });
+
+                              throw new Error(
+                                "Could not update billing address",
+                              );
+                            }
+                          },
+                        )}
+                      />
+                    </div>
+                  </div>
+                </label>
+              </RadioGroup>
             </TabsContent>
           </Tabs>
 
@@ -290,12 +404,6 @@ export const CheckoutPayment = ({
             setActiveTab={setAddressActiveTab}
             setIsCountryChanging={setIsCountryChanging}
             user={user}
-          />
-
-          <PlaceOrderButton
-            errors={errors}
-            isDisabled={isCountryChanging || !canProceed}
-            isLoading={isLoading}
           />
         </div>
       </form>

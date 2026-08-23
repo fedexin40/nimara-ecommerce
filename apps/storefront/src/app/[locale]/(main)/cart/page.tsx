@@ -2,6 +2,7 @@ import {
   generateStandardCartMetadata,
   StandardCartView,
 } from "@nimara/features/cart/shop-basic-cart/standard";
+import { redirect } from "@nimara/i18n/routing";
 
 import { clientEnvs } from "@/envs/client";
 import { getCheckoutId, revalidateCart } from "@/features/checkout/server";
@@ -52,6 +53,25 @@ export default async function Page(props: any) {
   }
 
   const checkoutId = await getCheckoutId();
+
+  if (checkoutId) {
+    const checkoutService = await services.getCheckoutService();
+    const resultCheckout = await checkoutService.checkoutGet({
+      checkoutId,
+      languageCode: region.language.code,
+      countryCode: region.market.countryCode,
+      options: {
+        cache: "no-store",
+      },
+    });
+
+    if (!resultCheckout.ok) {
+      redirect({
+        href: "/api/checkout/clear",
+        locale: region.language.locale,
+      });
+    }
+  }
 
   return (
     <StandardCartView

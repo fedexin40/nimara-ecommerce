@@ -52,7 +52,7 @@ export const StandardPDPView = async ({
                 availability={availability}
                 services={services}
                 checkoutId={checkoutId}
-                showAs="carousel"
+                showAs="vertical"
               />
             </div>
 

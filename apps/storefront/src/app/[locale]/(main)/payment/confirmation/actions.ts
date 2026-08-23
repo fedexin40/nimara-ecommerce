@@ -72,14 +72,18 @@ const processCheckoutPayment = async ({
   if (transactionId) {
     const paymentService = await services.getPaymentService();
 
+    const provider = searchParams?.provider;
+
     const resultProcess = await paymentService.paymentProcess({
       transaction: { id: transactionId },
     });
 
-    // 1. Payment processing errored — redirect back to the payment step.
-    if (!resultProcess.ok) {
-      return redirectToPaymentStep({
-        errorCode: resultProcess.errors[0].code,
+    // 1. In Mexico some payments like oxxo are not pay immediately
+    // so instead of failing return to home
+    // Besides Paypal is not processed here, that's why it is just sending to home
+    if (!resultProcess.ok || provider == "paypal") {
+      redirect({
+        href: paths.home.asPath(),
         locale,
       });
     }
