@@ -78,7 +78,7 @@ export function createI18nMiddleware({
         request.headers.get("x-middleware-preflight") === "1";
 
       // Skip i18n middleware for prefetch requests, bot requests, and OPTIONS requests
-      if (isRequestPrefetch || isRequestFromBot || isOptionsRequest) {
+      if (isRequestPrefetch || isOptionsRequest) {
         logger?.debug(
           `Skipping i18n middleware for request: ${request.method} ${request.url}`,
           {
