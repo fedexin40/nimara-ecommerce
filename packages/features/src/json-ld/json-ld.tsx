@@ -93,16 +93,16 @@ export const websiteToJsonLd = (): WithContext<WebSite> => {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Nimara Storefront",
-    url: "https://www.nimara.store.com",
+    name: "Joyería Proyecto 705",
+    url: "https://www.proyecto705.com.mx",
     mainEntityOfPage: {
       "@type": "WebPage",
-      url: "https://www.nimara.store.com",
+      url: "https://www.proyecto705.com.mx",
     },
     publisher: {
       "@type": "Organization",
-      name: "Nimara Storefront",
-      url: "https://www.nimara.store.com",
+      name: "Joyería Proyecto 705",
+      url: "https://www.proyecto705.com.mx",
       image: {
         "@type": "ImageObject",
         url: "/brand-logo.svg",

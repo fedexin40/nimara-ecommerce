@@ -84,7 +84,7 @@ export async function GET(
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={new URL(
-            "brand-logo-dark.svg",
+            "logo.png",
             clientEnvs.NEXT_PUBLIC_STOREFRONT_URL,
           ).toString()}
           alt={t("common.logo")}
