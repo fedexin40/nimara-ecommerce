@@ -128,7 +128,7 @@ const getOrCreateMetaExternalId = (
   }
 
   return {
-    externalId: crypto.randomUUID(),
+    externalId: Math.random().toString(36).substring(2),
     isNew: true,
   };
 };
