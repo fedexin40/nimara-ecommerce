@@ -17,6 +17,7 @@ import { ProductImagePlaceholder } from "@nimara/features/shared/product/product
 import {
   Carousel,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
 } from "@nimara/ui/components/carousel";
 import { cn } from "@nimara/ui/lib/utils";
@@ -180,6 +181,7 @@ const MobileOnlyCarousel = (props: {
           </CarouselItem>
         ))}
       </CarouselContent>
+      <CarouselDots/>
     </Carousel>
   </div>
 );

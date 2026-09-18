@@ -254,6 +254,59 @@ const CarouselNext = ({
 
 CarouselNext.displayName = "CarouselNext";
 
+const CarouselDots = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
+  const { api } = useCarousel();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const update = () => {
+      setCurrent(api.selectedScrollSnap());
+      setCount(api.scrollSnapList().length);
+    };
+
+    update();
+
+    api.on("select", update);
+    api.on("reInit", update);
+
+    return () => {
+      api.off("select", update);
+      api.off("reInit", update);
+    };
+  }, [api]);
+
+  if (count <= 1) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn("mt-3 flex items-center justify-center gap-2", className)}
+      {...props}
+    >
+      {Array.from({ length: count }).map((_, index) => (
+        <span
+          key={index}
+          className={cn(
+            "h-2 rounded-full transition-all",
+            index === current ? "bg-foreground w-5" : "bg-foreground/30 w-2",
+          )}
+        />
+      ))}
+    </div>
+  );
+};
+
+CarouselDots.displayName = "CarouselDots";
+
 export {
   type CarouselApi,
   Carousel,
@@ -261,4 +314,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 };
