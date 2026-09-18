@@ -8,7 +8,7 @@ type ProductTitleProps = {
 export const ProductTitle = ({ title, className }: ProductTitleProps) => {
   return (
     <h1
-      className={`text-primary text-left text-3xl font-semibold ${className}`}
+      className={`text-primary text-center md:text-left md:text-3xl text-2xl font-semibold mt-10 ${className}`}
     >
       {title}
     </h1>

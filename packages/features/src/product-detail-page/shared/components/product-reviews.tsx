@@ -5,63 +5,55 @@ import { Skeleton } from "@nimara/ui/components/skeleton";
 const REVIEWS = [
   {
     id: 1,
-    content: "Great product!",
+    content: "Excelente producto!",
     rating: 5,
-    author: "John Doe",
-    date: "2023-10-01",
+    author: "Josefina Lozano",
+    date: "2025-10-01",
   },
   {
     id: 2,
-    content: "Very satisfied with my purchase. Would recommend!",
+    content: "Muy satisfecho con mi compra. Lo recomiendo mil!",
     rating: 4,
-    author: "Jane Smith",
-    date: "2023-10-02",
+    author: "Rodrigo Guzman",
+    date: "2025-11-02",
   },
   {
     id: 3,
-    content: "Not what I expected. The quality could be better. Disappointed.",
+    content: "Me tardo un poco en llegar. Y son un poco mas pequeños de lo que pensaba. Recomendación regular.",
     rating: 2,
-    author: "Alice Johnson",
-    date: "2023-10-03",
+    author: "Alicia Villaseñor",
+    date: "2025-12-03",
   },
   {
     id: 4,
-    content: "Excellent quality and fast shipping. Will buy again. Thanks!",
+    content: "Execelente calidad y rápida entrega. Definitivamente volvería a comprar. Enormes gracias!",
     rating: 5,
-    author: "Bob Brown",
-    date: "2023-10-04",
+    author: "Tatiana",
+    date: "2026-01-04",
   },
   {
     id: 5,
     content:
-      "Would buy again, highly recommend! Excellent service and quality. I'm very satisfied. Will definitely return for more purchases.",
+      "Si volvería a comprar, Lo recomiendo! excelente servicio y calidad. Muy satisfecha.",
     rating: 5,
-    author: "Charlie Davis",
-    date: "2023-10-05",
+    author: "Javier Estrada",
+    date: "2026-02-05",
   },
   {
     id: 6,
     content:
-      "Decent product, but could be improved. Not bad overall. Good value for the price.",
+      "Producto normal, calidad normal. En general normal. Siento que tiene una buena relación precio calidad.",
     rating: 3,
-    author: "Emily White",
-    date: "2023-10-06",
+    author: "Alondra Paola Cruz",
+    date: "2026-03-06",
   },
   {
     id: 7,
     content:
-      "Amazing experience, love it! Highly recommend to others. Will definitely purchase again.",
+      "Increible experiencia, lo ame! Lo recomiendo para los demas. Es mi segunda compra y seguro hare muchas mas.",
     rating: 5,
-    author: "David Wilson",
-    date: "2023-10-07",
-  },
-  {
-    id: 8,
-    content:
-      "Not worth the price. Expected better quality for the cost. Disappointed.",
-    rating: 1,
-    author: "Laura Green",
-    date: "2023-10-08",
+    author: "Karla Xicale",
+    date: "2026-05-07",
   },
 ];
 
@@ -75,10 +67,10 @@ export const ProductReviews = async () => {
   await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate data fetching
 
   return (
-    <div className="bg-background">
+    <div className="bg-background mt-8">
       <div className="flex justify-between">
-        <h2 className="text-primary mb-4 text-xl">Reviews</h2>
-        <p className="text-muted-foreground mb-6">{REVIEWS.length} reviews</p>
+        <h2 className="text-primary mb-4 text-xl">Calificaciones</h2>
+        <p className="text-muted-foreground mb-6">{REVIEWS.length} calificaciones</p>
       </div>
       <ul className="space-y-4">
         {REVIEWS.map((review) => (
@@ -96,7 +88,7 @@ export const ProductReviews = async () => {
                 ))}
               </span>
               <span className="text-foreground text-sm">
-                by {review.author} on{" "}
+                Por {review.author} el{" "}
                 {new Date(review.date).toLocaleDateString()}
               </span>
             </div>

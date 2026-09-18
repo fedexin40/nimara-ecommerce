@@ -6,6 +6,10 @@ import { AttributesDropdown } from "../shared/components/attributes-dropdown";
 import { ProductBreadcrumbs } from "../shared/components/product-breadcrumbs";
 import { ProductHighlights } from "../shared/components/product-highlights";
 import { ProductMediaWrapper } from "../shared/components/product-media-wrapper";
+import {
+  ProductReviews,
+  ProductReviewsSkeleton,
+} from "../shared/components/product-reviews";
 import { ProductTitle } from "../shared/components/product-title";
 import { RelatedProductsContainer } from "../shared/components/related-products-container";
 import { RelatedProductsSkeleton } from "../shared/components/related-products-skeleton";
@@ -75,6 +79,10 @@ export const StandardPDPView = async ({
               </section>
             </div>
           </div>
+
+          <Suspense fallback={<ProductReviewsSkeleton />}>
+            <ProductReviews />
+          </Suspense>
 
           <Suspense fallback={<RelatedProductsSkeleton />}>
             <RelatedProductsContainer

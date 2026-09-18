@@ -71,7 +71,7 @@ export const Price = ({
     const { hasDiscount, oldPrice } = getDiscountInfo(price, undiscountedPrice);
 
     return (
-      <span className={cn("flex items-center gap-2 pt-0.5", className)}>
+      <span className={className}>
         {hasDiscount && oldPrice && (
           <span className="text-gray-500 line-through dark:text-gray-400">
             {renderPrice(oldPrice)}

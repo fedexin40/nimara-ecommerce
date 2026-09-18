@@ -261,6 +261,26 @@ const CarouselDots = ({
   const { api } = useCarousel();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
+  const [isDark, setIsDark] = React.useState(false);
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!api) {
@@ -295,10 +315,17 @@ const CarouselDots = ({
       {Array.from({ length: count }).map((_, index) => (
         <span
           key={index}
-          className={cn(
-            "h-2 rounded-full transition-all",
-            index === current ? "bg-foreground w-5" : "bg-foreground/30 w-2",
-          )}
+          className="h-2 w-2 rounded-full transition-colors"
+          style={{
+            backgroundColor:
+              index === current
+                ? isDark
+                  ? "#ffffff"
+                  : "#000000"
+                : isDark
+                  ? "rgba(255, 255, 255, 0.35)"
+                  : "rgba(0, 0, 0, 0.35)",
+          }}
         />
       ))}
     </div>
