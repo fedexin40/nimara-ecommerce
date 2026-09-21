@@ -34,7 +34,7 @@ const REVIEWS = [
   {
     id: 5,
     content:
-      "Si volvería a comprar, Lo recomiendo! excelente servicio y calidad. Muy satisfecha.",
+      "Si volvería a comprar, Lo recomiendo! excelente servicio y calidad. Muy satisfecho.",
     rating: 5,
     author: "Javier Estrada",
     date: "2026-02-05",

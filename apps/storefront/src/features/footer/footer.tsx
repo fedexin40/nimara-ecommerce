@@ -57,7 +57,7 @@ export const Footer = async () => {
     : "";
 
   return (
-    <footer className="mt-8 bg-muted text-sm text-primary transition-[background-color]">
+    <footer className="mt-8 bg-neutral-950 text-sm text-neutral-100">
       <div className="container">
         <div className="flex flex-wrap justify-between gap-8 py-8">
           <div
@@ -74,14 +74,14 @@ export const Footer = async () => {
                     alt="Logo"
                     width={160}
                     height={40}
-                    className="h-full w-full object-cover dark:invert"
+                    className="h-full w-full object-cover invert"
                   />
                 </LocalizedLink>
               </div>
             </div>
 
             <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-              <span className="flex items-center font-medium text-primary">
+              <span className="flex items-center font-medium">
                 {t("footer.our-products")}
               </span>
               <div className="flex flex-col gap-4">
@@ -101,7 +101,7 @@ export const Footer = async () => {
 
             {showMarketplaceFooter ? (
               <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-                <span className="flex items-center text-primary">
+                <span className="flex items-center">
                   {t("footer.marketplace")}
                 </span>
                 <div className="flex flex-col gap-4">
@@ -128,7 +128,7 @@ export const Footer = async () => {
             ) : null}
 
             <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
-              <span className="flex items-center font-medium text-primary">
+              <span className="flex items-center font-medium">
                 {t("footer.help")}
               </span>
               <div className="flex flex-col gap-4">
