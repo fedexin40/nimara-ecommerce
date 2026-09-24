@@ -8,59 +8,59 @@ export type MetaStandardEventName =
   | "CompleteRegistration";
 
 export type MetaEventParameters = {
-  currency?: string;
-  value?: number;
-  content_type?: string;
   content_ids?: string[];
   content_name?: string;
+  content_type?: string;
   contents?: Array<{
     id: string;
-    quantity?: number;
     item_price?: number;
+    quantity?: number;
   }>;
-  search_string?: string;
   coupon?: string;
-  order_id?: string;
+  currency?: string;
   num_items?: number;
-  shipping?: number;
-  tax?: number;
+  number_of_results?: number;
+  order_id?: string;
   payment_type?: string;
   registration_method?: string;
-  number_of_results?: number;
+  search_string?: string;
+  shipping?: number;
+  tax?: number;
+  value?: number;
 };
 
 export type MetaCapiCustomerData = {
+  city?: string;
+  country?: string;
   email?: string;
-  phone?: string;
+  externalId?: string;
   firstName?: string;
   lastName?: string;
-  externalId?: string;
-  city?: string;
-  state?: string;
+  phone?: string;
   postalCode?: string;
-  country?: string;
+  state?: string;
 };
 
 export type MetaTrackingEvent = {
-  eventName: MetaStandardEventName;
+  customer?: MetaCapiCustomerData;
   eventId: string;
+  eventName: MetaStandardEventName;
   eventSourceUrl?: string;
   parameters?: MetaEventParameters;
-  customer?: MetaCapiCustomerData;
 };
 
 declare global {
   interface Window {
+    _fbq?: Window["fbq"];
+
     fbq?: {
       (...args: unknown[]): void;
       callMethod?: (...args: unknown[]) => void;
-      queue?: unknown[];
-      push?: (...args: unknown[]) => void;
       loaded?: boolean;
+      push?: (...args: unknown[]) => void;
+      queue?: unknown[];
       version?: string;
     };
-
-    _fbq?: Window["fbq"];
   }
 }
 

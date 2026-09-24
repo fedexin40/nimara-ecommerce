@@ -109,7 +109,7 @@ export const CheckoutSections = ({
     void (async () => {
       const { trackBeginCheckout } = await trackingServiceLoader();
 
-      await trackBeginCheckout({ checkout });
+      await trackBeginCheckout({ checkout, user });
     })();
   }, []);
 

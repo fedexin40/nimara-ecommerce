@@ -12,10 +12,23 @@ export const metaTrackAddPaymentInfoInfra =
   (): TrackAddPaymentInfoProvider => ({
     async track({ checkout, paymentType }) {
       const eventId = createMetaEventId("AddPaymentInfo");
+      const shippingAddress = checkout.shippingAddress;
 
       await trackMetaEvent({
         eventName: "AddPaymentInfo",
         eventId,
+
+        customer: {
+          email: checkout.email ?? undefined,
+          firstName: shippingAddress?.firstName ?? undefined,
+          lastName: shippingAddress?.lastName ?? undefined,
+          phone: shippingAddress?.phone ?? undefined,
+          city: shippingAddress?.city ?? undefined,
+          state: shippingAddress?.countryArea ?? undefined,
+          postalCode: shippingAddress?.postalCode ?? undefined,
+          country: shippingAddress?.country ?? undefined,
+        },
+
         parameters: {
           ...createMetaCommerceEvent({
             currency: checkout.totalPrice.gross.currency,

@@ -11,10 +11,23 @@ import { trackMetaEvent } from "../track-event";
 export const metaTrackPurchaseInfra = (): TrackPurchaseProvider => ({
   async track({ checkout, orderId }) {
     const eventId = createMetaEventId("Purchase", orderId);
+    const shippingAddress = checkout.shippingAddress;
 
     await trackMetaEvent({
       eventName: "Purchase",
       eventId,
+
+      customer: {
+        email: checkout.email ?? undefined,
+        firstName: shippingAddress?.firstName ?? undefined,
+        lastName: shippingAddress?.lastName ?? undefined,
+        phone: shippingAddress?.phone ?? undefined,
+        city: shippingAddress?.city ?? undefined,
+        state: shippingAddress?.countryArea ?? undefined,
+        postalCode: shippingAddress?.postalCode ?? undefined,
+        country: shippingAddress?.country ?? undefined,
+      },
+
       parameters: {
         ...createMetaCommerceEvent({
           currency: checkout.totalPrice.gross.currency,
