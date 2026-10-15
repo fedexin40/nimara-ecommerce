@@ -10,6 +10,7 @@ import {
 import { HomeProvider } from "../shared/providers/home-provider";
 import { type StandardHomeViewProps } from "../shared/types";
 import { RichTextBlock, RichTextBlockProps } from "../shared/components/rich-text-block";
+import { ImagesSection } from "../shared/components/images-section";
 
 const richTextContent: RichTextBlockProps = {
   eyebrow: "¿Por qué comprar con nostros?",
@@ -65,6 +66,7 @@ export const StandardHomeView = async ({
               listName="Home products"
             />
           </Suspense>
+          <ImagesSection fields={fields} />
           <div>
             <AccountNotifications
               user={user}
