@@ -1,6 +1,7 @@
 
 "use client";
 
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { LocalizedLink } from "@nimara/i18n/routing";
@@ -25,7 +26,6 @@ type ImagesSectionClientProps = {
 
 export const ImagesSectionClient = ({
   header,
-  headerFontColor,
   images,
 }: ImagesSectionClientProps) => {
   if (!images.length) {
@@ -33,12 +33,17 @@ export const ImagesSectionClient = ({
   }
 
   const renderImage = (item: ImageSectionItem) => (
-    <div
-      className="relative aspect-square w-full overflow-hidden bg-cover bg-center"
-      style={{
-        backgroundImage: `url("${item.image}")`,
-      }}
-    >
+    <div className="relative aspect-square w-full overflow-hidden">
+      <Image
+        src={item.image}
+        alt={item.buttonText}
+        fill
+        sizes="(max-width: 639px) 67vw, 33vw"
+        className="object-cover"
+        loading="lazy"
+        quality={75}
+      />
+
       <Button
         className="absolute bottom-4 left-1/2 -translate-x-1/2"
         variant="outline"

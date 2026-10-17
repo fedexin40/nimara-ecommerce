@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { type ReactNode } from "react";
 
 import { FacebookPixel } from "../tracking/meta/meta-pixel";
@@ -9,6 +10,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <>
       {children}
       <FacebookPixel />
+      <Analytics />
     </>
   );
 }
