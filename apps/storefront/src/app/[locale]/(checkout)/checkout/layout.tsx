@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { Logo } from "@/features/header/logo";
 import { ThemeToggle } from "@/features/header/theme-toggle";
 
+import { CheckoutTracking } from "./tracking";
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
 
@@ -26,20 +28,23 @@ export default function CheckoutLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
-      <header className="container flex items-center justify-between">
-        <div className="bg-background px-0 py-4">
-          <Logo />
-        </div>
+    <>
+      <CheckoutTracking />
+      <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
+        <header className="container flex items-center justify-between">
+          <div className="bg-background px-0 py-4">
+            <Logo />
+          </div>
 
-        <ThemeToggle />
-      </header>
+          <ThemeToggle />
+        </header>
 
-      <main className="bg-muted py-8">
-        <div className="container">{children}</div>
-      </main>
+        <main className="bg-muted py-8">
+          <div className="container">{children}</div>
+        </main>
 
-      <footer className="container">{/* Footer */}</footer>
-    </div>
+        <footer className="container">{/* Footer */}</footer>
+      </div>
+    </>
   );
 }

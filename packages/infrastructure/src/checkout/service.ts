@@ -18,6 +18,8 @@ import { saleorCheckoutEmailUpdateInfra } from "./saleor/infrastructure/checkout
 import { orderCreateInfra } from "./saleor/infrastructure/order-create-infra";
 import { saleorCheckoutBillingAddressUpdateInfra } from "./saleor/infrastructure/update-checkout-billing-address-infra";
 import type { CheckoutService, SaleorCheckoutServiceConfig } from "./types";
+import { saleorCheckoutMetadataUpdateInfra } from "./saleor/infrastructure/checkout-metadata-update";
+
 
 export const saleorCheckoutService = (
   serviceConfig: SaleorCheckoutServiceConfig,
@@ -53,4 +55,5 @@ export const saleorCheckoutService = (
     checkoutRemovePromoCodeInfra:
       saleorCheckoutRemovePromoCodeInfra(serviceConfig),
   }),
+  checkoutMetadataUpdate: saleorCheckoutMetadataUpdateInfra(serviceConfig),
 });

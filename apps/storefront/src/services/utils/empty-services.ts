@@ -92,6 +92,7 @@ export const emptyCheckoutService = {
   checkoutCustomerAttach: async () => notConfigured("CHECKOUT_NOT_FOUND_ERROR"),
   checkoutEmailUpdate: async () => notConfigured("CHECKOUT_NOT_FOUND_ERROR"),
   checkoutGet: async () => notConfigured("CHECKOUT_NOT_FOUND_ERROR"),
+  checkoutMetadataUpdate: async () => notConfigured("CHECKOUT_NOT_FOUND_ERROR"),
   checkoutRemovePromoCode: async () =>
     notConfigured("CHECKOUT_NOT_FOUND_ERROR"),
   checkoutShippingAddressUpdate: async () =>

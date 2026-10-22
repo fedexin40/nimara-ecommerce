@@ -67,7 +67,7 @@ export const getTrackingService = () => {
      * Fired when a purchase is completed.
      */
     trackPurchase: createTrackingUseCase<TrackPurchaseInput>({
-      providers: [gtm.purchase, meta.purchase],
+      providers: [gtm.purchase],
     }),
     /**
      * Fired when a product is selected from a list (PLP, carousel, search results).

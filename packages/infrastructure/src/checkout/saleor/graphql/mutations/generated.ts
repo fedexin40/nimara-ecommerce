@@ -97,6 +97,21 @@ export type CheckoutEmailUpdateMutationVariables = Types.Exact<{
 
 export type CheckoutEmailUpdateMutation = CheckoutEmailUpdateMutation_Mutation;
 
+export type CheckoutMetadataUpdateMutation_updateMetadata_UpdateMetadata_errors_MetadataError = { field: string | null, message: string | null, code: Types.MetadataErrorCode };
+
+export type CheckoutMetadataUpdateMutation_updateMetadata_UpdateMetadata = { errors: Array<CheckoutMetadataUpdateMutation_updateMetadata_UpdateMetadata_errors_MetadataError> };
+
+export type CheckoutMetadataUpdateMutation_Mutation = { updateMetadata: CheckoutMetadataUpdateMutation_updateMetadata_UpdateMetadata | null };
+
+
+export type CheckoutMetadataUpdateMutationVariables = Types.Exact<{
+  id: Types.Scalars['ID']['input'];
+  input: Array<Types.MetadataInput> | Types.MetadataInput;
+}>;
+
+
+export type CheckoutMetadataUpdateMutation = CheckoutMetadataUpdateMutation_Mutation;
+
 export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_checkout_Checkout = { id: string };
 
 export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_errors_CheckoutError = { addressType: Types.AddressTypeEnum | null, code: Types.CheckoutErrorCode, field: string | null, lines: Array<string> | null, message: string | null, variants: Array<string> | null };
@@ -245,6 +260,17 @@ export const CheckoutEmailUpdateMutationDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CheckoutEmailUpdateMutation, CheckoutEmailUpdateMutationVariables>;
+export const CheckoutMetadataUpdateMutationDocument = new TypedDocumentString(`
+    mutation checkoutMetadataUpdateMutation($id: ID!, $input: [MetadataInput!]!) {
+  updateMetadata(id: $id, input: $input) {
+    errors {
+      field
+      message
+      code
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CheckoutMetadataUpdateMutation, CheckoutMetadataUpdateMutationVariables>;
 export const CheckoutRemovePromoCodeMutationDocument = new TypedDocumentString(`
     mutation CheckoutRemovePromoCodeMutation($promoCode: String!, $checkoutId: ID!) {
   checkoutRemovePromoCode(promoCode: $promoCode, id: $checkoutId) {

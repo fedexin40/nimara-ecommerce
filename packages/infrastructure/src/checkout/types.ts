@@ -1,3 +1,4 @@
+
 import { type ThumbnailFormatEnum } from "@nimara/codegen/schema";
 import type { AddressCreateInput } from "@nimara/domain/objects/Address";
 import type { Checkout } from "@nimara/domain/objects/Checkout";
@@ -85,6 +86,20 @@ export type CheckoutShippingAddressUpdateInfra =
 export type CheckoutShippingAddressUpdateUseCase =
   CheckoutShippingAddressUpdateInfra;
 
+export type CheckoutMetadataUpdateOptions = {
+  id: Checkout["id"];
+  metadata: {
+    key: string;
+    value: string;
+  }[];
+};
+
+export type CheckoutMetadataUpdateInfra = (
+  opts: CheckoutMetadataUpdateOptions,
+) => AsyncResult<{ success: true }>;
+
+export type CheckoutMetadataUpdateUseCase = CheckoutMetadataUpdateInfra;
+
 export type SaleorCheckoutServiceConfig = {
   apiURL: string;
   isMarketplaceEnabled: boolean;
@@ -98,6 +113,7 @@ export type CheckoutService = {
   checkoutCustomerAttach: CheckoutCustomerAttachUseCase;
   checkoutEmailUpdate: CheckoutEmailUpdateUseCase;
   checkoutGet: CheckoutGetUseCase;
+  checkoutMetadataUpdate: CheckoutMetadataUpdateUseCase;
   checkoutRemovePromoCode: CheckoutRemovePromoCodeUseCase;
   checkoutShippingAddressUpdate: CheckoutShippingAddressUpdateUseCase;
   deliveryMethodUpdate: CheckoutDeliveryMethodUpdateUseCase;

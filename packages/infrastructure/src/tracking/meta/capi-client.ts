@@ -19,18 +19,16 @@ export const sendMetaCapiEvent = async (
     });
 
     if (!response.ok && process.env.NODE_ENV !== "production") {
-      console.error(
+      console.warn(
         "Meta CAPI request failed:",
         response.status,
         await response.text(),
       );
     }
   } catch (error) {
-    /*
-     * Tracking must never interrupt the storefront flow.
-     */
+    // Tracking must never interrupt the storefront flow.
     if (process.env.NODE_ENV !== "production") {
-      console.error("Meta CAPI request failed:", error);
+      console.warn("Meta CAPI request failed:", error);
     }
   }
 };
