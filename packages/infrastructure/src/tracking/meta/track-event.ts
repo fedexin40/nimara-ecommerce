@@ -7,7 +7,7 @@ import type { MetaTrackingEvent } from "./types";
  * - Meta Pixel (browser)
  * - Meta Conversions API (server)
  *
- * Both transports share the same eventId so Meta can deduplicate them.
+ * Both transports wait for the shared identity initialization.
  */
 export const trackMetaEvent = async ({
   eventName,

@@ -1,3 +1,4 @@
+import { initializeMetaIdentity } from "./identity-client";
 import type { MetaTrackingEvent } from "./types";
 
 export const sendMetaCapiEvent = async (
@@ -8,6 +9,8 @@ export const sendMetaCapiEvent = async (
   }
 
   try {
+    await initializeMetaIdentity();
+
     const response = await fetch("/api/meta/events", {
       method: "POST",
       headers: {

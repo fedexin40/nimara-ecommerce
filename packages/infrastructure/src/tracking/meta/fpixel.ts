@@ -1,3 +1,4 @@
+import { initializeMetaIdentity } from "./identity-client";
 import type {
   MetaEventParameters,
   MetaStandardEventName,
@@ -12,6 +13,8 @@ const isBrowser = (): boolean =>
 
 const isPixelAvailable = (): boolean =>
   isBrowser() && typeof window.fbq === "function";
+
+let pixelInitialized = false;
 
 const logUnavailablePixel = (
   eventName: string,
@@ -36,48 +39,89 @@ const logUnavailablePixel = (
   });
 };
 
-const track = (
+const initializeMetaPixel = async (): Promise<void> => {
+  const externalId = await initializeMetaIdentity();
+
+  if (pixelInitialized) {
+    return;
+  }
+
+  if (!isPixelAvailable()) {
+    throw new Error("Meta Pixel is not available");
+  }
+
+  if (!FB_PIXEL_ID) {
+    throw new Error("Meta Pixel ID is not configured");
+  }
+
+  window.fbq?.(
+    "init",
+    FB_PIXEL_ID,
+    {
+      external_id: externalId,
+    },
+  );
+
+  pixelInitialized = true;
+};
+
+const track = async (
   method: "track" | "trackCustom",
   eventName: string,
   parameters: MetaEventParameters = {},
   eventId?: string,
-): void => {
-  if (!isPixelAvailable()) {
+): Promise<void> => {
+  if (!isBrowser()) {
     logUnavailablePixel(eventName, eventId);
     return;
   }
 
-  if (isDevelopment) {
-    console.debug("[Meta Pixel] Sending browser event", {
-      method,
-      eventName,
-      eventId,
-      parameters,
-    });
-  }
+  try {
+    await initializeMetaPixel();
 
-  if (eventId) {
+    if (isDevelopment) {
+      console.debug("[Meta Pixel] Sending browser event", {
+        method,
+        eventName,
+        eventId,
+        parameters,
+      });
+    }
+
+    if (eventId) {
+      window.fbq?.(
+        method,
+        eventName,
+        parameters,
+        {
+          eventID: eventId,
+        },
+      );
+
+      return;
+    }
+
     window.fbq?.(
       method,
       eventName,
       parameters,
-      {
-        eventID: eventId,
-      },
     );
-
-    return;
+  } catch (error) {
+    /*
+     * Tracking must never interrupt the storefront flow.
+     */
+    if (isDevelopment) {
+      console.error("[Meta Pixel] Event could not be sent", {
+        eventName,
+        eventId,
+        error,
+      });
+    }
   }
-
-  window.fbq?.(
-    method,
-    eventName,
-    parameters,
-  );
 };
 
 export const pageview = (eventId?: string): void => {
-  track(
+  void track(
     "track",
     "PageView",
     {},
@@ -90,7 +134,7 @@ export const event = (
   parameters: MetaEventParameters = {},
   eventId?: string,
 ): void => {
-  track(
+  void track(
     "track",
     eventName,
     parameters,
@@ -103,7 +147,7 @@ export const customEvent = (
   parameters: MetaEventParameters = {},
   eventId?: string,
 ): void => {
-  track(
+  void track(
     "trackCustom",
     eventName,
     parameters,

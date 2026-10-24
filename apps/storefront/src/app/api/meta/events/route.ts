@@ -21,7 +21,6 @@ const META_CAPI_ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN;
 const META_CAPI_TEST_EVENT_CODE = process.env.META_CAPI_TEST_EVENT_CODE;
 
 const META_EXTERNAL_ID_COOKIE = "_meta_external_id";
-const META_EXTERNAL_ID_MAX_AGE = 60 * 60 * 24 * 365;
 
 const ALLOWED_EVENT_NAMES = new Set<MetaStandardEventName>([
   "ViewContent",
@@ -108,44 +107,6 @@ const getClientIp = (request: NextRequest): string | undefined => {
   }
 
   return request.headers.get("x-real-ip") ?? undefined;
-};
-
-const getOrCreateMetaExternalId = (
-  request: NextRequest,
-): {
-  externalId: string;
-  isNew: boolean;
-} => {
-  const existingExternalId = request.cookies.get(
-    META_EXTERNAL_ID_COOKIE,
-  )?.value;
-
-  if (existingExternalId) {
-    return {
-      externalId: existingExternalId,
-      isNew: false,
-    };
-  }
-
-  return {
-    externalId: Math.random().toString(36).substring(2),
-    isNew: true,
-  };
-};
-
-const setMetaExternalIdCookie = (
-  response: NextResponse,
-  externalId: string,
-): void => {
-  response.cookies.set({
-    name: META_EXTERNAL_ID_COOKIE,
-    value: externalId,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: META_EXTERNAL_ID_MAX_AGE,
-  });
 };
 
 const getEventSourceUrl = (
@@ -248,8 +209,8 @@ const createUserData = (
   }
 
   /*
-   * Identificador first-party generado por nuestra aplicación.
-   * Se mantiene estable mediante una cookie HttpOnly.
+   * Identificador creado previamente por /api/meta/identity.
+   * Pixel y CAPI utilizan el mismo valor.
    */
   userData.setExternalId(externalId);
 
@@ -462,8 +423,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return jsonError("Unable to determine event_source_url", 422);
   }
 
-  const { externalId, isNew: isNewExternalId } =
-    getOrCreateMetaExternalId(request);
+  const externalId = request.cookies.get(META_EXTERNAL_ID_COOKIE)?.value;
+
+  if (!externalId) {
+    return jsonError("Meta identity is not initialized", 409);
+  }
 
   const userData = createUserData(request, event.customer, externalId);
 
@@ -506,10 +470,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         },
       },
     );
-
-    if (isNewExternalId) {
-      setMetaExternalIdCookie(nextResponse, externalId);
-    }
 
     return nextResponse;
   } catch (error) {
