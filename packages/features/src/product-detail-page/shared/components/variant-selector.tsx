@@ -161,6 +161,7 @@ export const VariantSelector = ({
                         variant="outline"
                         key={valueSlug}
                         value={valueSlug}
+                        className="data-[state=on]:!bg-gray-400/75 dark:data-[state=on]:!bg-gray-700"
                       >
                         {valueName}
                       </ToggleGroupItem>
