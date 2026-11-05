@@ -99,7 +99,7 @@ export const checkIfRequired =
     if (!foundField) {
       return;
     }
-    if (foundField.isRequired && !arg) {
+    if ((foundField.isRequired || fieldName === "streetAddress2") && !arg) {
       ctx.addIssue({
         code: "invalid_type",
         path: [],
